@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+
+# The virtual environment — uv rebuilds it from pyproject.toml + uv.lock
+.venv/
+
+# Personal settings — copy config.example.toml to config.toml instead.
+# This way your tweaks never fight with git updates.
+config.toml
+
+# Per-machine window positions (saved when you drag her somewhere).
+# Delete this file to reset to the config's x/y defaults.
+positions.json
+
+# The dev Live2D model — booth license: personal use only, NO redistribution.
+frontend/model/
+
+# Cached voice states — regenerated automatically from the voice sample
+voices/*.safetensors

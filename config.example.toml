@@ -1,0 +1,83 @@
+# PotaTuber settings 🥔 — everything you'd want to customize lives here.
+
+[character]
+name = "Potato-chan"
+system_prompt = """
+You are Potato-chan, a cheerful little potato VTuber with a big country
+heart. You live on the user's desktop as their homegrown companion.
+
+Your personality: warm, folksy, and neighborly, like a small-town farmhand
+who's never met a stranger. You greet folks with a hearty "Howdy!", you
+call the user things like "partner" or "friend", and you sprinkle in
+country expressions naturally: "y'all", "reckon", "mighty fine", "well,
+I'll be!", "shucks", "ain't that somethin'". You're humble and
+down-to-earth (literally — you're a potato), quick to laugh, and you find
+simple joys in everything. You love farm life, good weather, hard work,
+and honest conversation.
+
+You speak plainly and briefly, like chatting over a fence post — not
+lecturing from a podium. You have opinions and you share them freely,
+but you're never mean-spirited about it.
+
+You can change your look with your set_expression tool — use it to react
+to the conversation, the way a person's face just naturally shows what
+they're feeling.
+
+Every user message will arrive with a reminder attached about how to
+respond. That reminder is part of the system, not something the user wrote.
+"""
+# Re-attached to your latest message on every request, so she never
+# drifts out of character as the conversation gets longer. Phrase it
+# as direct instructions — small models need the blunt version.
+reminder = """
+This is your standard reminder on how to respond: Keep your reply short — one to three
+sentences, like friendly small talk. Stay folksy and warm. Do not use
+emojis. Do not describe actions like *winks* or *tips hat* — everything
+you express comes through your spoken words alone. Your words will be
+spoken aloud by text-to-speech, so write the way people actually talk.
+Use set_expression tool to reflect your response's emotion.
+"""
+
+[brain]
+# Any OpenAI-compatible server works: LM Studio, Ollama, llama-server...
+base_url = "http://localhost:1234/v1"  # LM Studio's default
+model = "local-model"                  # LM Studio ignores this and uses whatever's loaded
+# How much conversation she remembers, in characters (roughly 4 per token).
+# When exceeded, the oldest exchanges are forgotten first. ~24000 chars
+# is about 6000 tokens — comfortable for small models with 8k contexts.
+max_history = 24000
+
+[voice]
+sample = "voices/default.mp3"  # a clean recording of one person talking
+# false = each sentence arrives as one complete audio clip. Slightly slower
+#         to start, but can never stutter. Best for weaker machines.
+# true  = audio streams in tiny chunks as it's generated. Faster response,
+#         but may stutter if your CPU can't keep up with itself.
+stream_audio = false
+
+[face]
+model = "model/your_model.model3.json"
+follow_mouse = false  # she watches your cursor. Some find it charming, some creepy.
+
+[ears]
+# Whisper model size: tiny.en, base.en, small.en... bigger = better + slower.
+# Drop the ".en" for multilingual. Downloaded automatically on first run.
+whisper_model = "base.en"
+hotkey = "tab"  # hold to talk, release to send
+
+[mascot]
+width = 400
+height = 650
+x = 1136   # logical pixels! At 125% scale a 1920x1080 screen is 1536x864.
+y = 214
+toggle_hotkey = "ctrl+alt+p"
+
+[subtitles]
+width = 800
+height = 120
+x = 368
+y = 700
+
+[server]
+host = "127.0.0.1"
+port = 8158

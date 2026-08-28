@@ -1,0 +1,1 @@
+"""PotaTuber: a tiny, fully local AI VTuber you can actually understand. 🥔"""

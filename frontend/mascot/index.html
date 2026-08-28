@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PotaTuber 🥔</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #2e2e2e; }
+    #ui { position: fixed; bottom: 12px; left: 12px; right: 12px; z-index: 10;
+          font-family: sans-serif; }
+
+    body { background: transparent; }
+
+    #wake {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 14px 28px;
+      font-size: 18px;
+      font-family: sans-serif;
+      font-weight: bold;
+      color: #fff;
+      background: #7c5cbf;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #wake:hover {
+      transform: translate(-50%, -50%) scale(1.06);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    #wake:active {
+      transform: translate(-50%, -50%) scale(0.97);
+    }
+
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+  <div id="ui">
+    <button id="wake">🥔 Wake her up</button>
+  </div>
+
+  <!-- The three magic ingredients, in dependency order: -->
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+  <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+  <script src="mascot.js"></script>
+</body>
+</html>

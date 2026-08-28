@@ -1,0 +1,26 @@
+[project]
+name = "potatuber"
+version = "0.1.0"
+description = "A tiny, fully local AI VTuber you can actually understand. 🥔"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "pocket-tts",
+    "pywhispercpp",
+    "sounddevice",
+    "soundfile",
+    "openai",
+    "faster-whisper",
+    "keyboard",
+    "pywebview"
+]
+
+[project.scripts]
+potatuber = "potatuber.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
