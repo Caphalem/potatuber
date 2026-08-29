@@ -1,11 +1,11 @@
 """Run the potato.
 
-    uv run python -m potatuber            → browser tab mode
-    uv run python -m potatuber --mascot   → desktop mascot mode
+    uv run python -m potatuber            → desktop mascot mode
 """
 
 import json
 from pathlib import Path
+import pathlib
 import socket
 import sys
 import threading
@@ -51,7 +51,7 @@ def main() -> None:
         )
 
     threading.Thread(target=serve, daemon=True).start()
-    wait_for_server(config.server.host, config.server.port, timeout=120.0)
+    wait_for_server(config.server.host, config.server.port, timeout=300.0)
 
     import webview
 
@@ -152,9 +152,12 @@ def main() -> None:
     mascot_window.events.moved += remember("mascot")
     subtitle_window.events.moved += remember("subtitles")
 
-    # private_mode=False: localStorage persists between runs (she remembers
-    # her zoom level). Default pywebview behavior wipes it on every exit.
-    webview.start(private_mode=False)
+    # gets the folder location of the local folder to store pywebview files in.
+    storage_path = f"{pathlib.Path().resolve()}/.pywebview_storage"
+
+    # private_mode=False: localStorage persists between runs (remembers
+    # zoom level). Default pywebview behavior wipes it on every exit.
+    webview.start(storage_path=storage_path, private_mode=False)
 
 
 if __name__ == "__main__":

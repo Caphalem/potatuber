@@ -40,7 +40,7 @@ Use set_expression tool to reflect your response's emotion.
 
 [brain]
 # Any OpenAI-compatible server works: LM Studio, Ollama, llama-server...
-base_url = "http://localhost:1234/v1"  # LM Studio's default
+base_url = "http://127.0.0.1:1234/v1"  # LM Studio's default
 model = "local-model"                  # LM Studio ignores this and uses whatever's loaded
 # How much conversation she remembers, in characters (roughly 4 per token).
 # When exceeded, the oldest exchanges are forgotten first. ~24000 chars

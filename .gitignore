@@ -13,8 +13,11 @@ config.toml
 # Delete this file to reset to the config's x/y defaults.
 positions.json
 
-# The dev Live2D model — booth license: personal use only, NO redistribution.
-frontend/model/
+# The dev Live2D models — booth license: personal use only, NO redistribution.
+frontend/models/
 
 # Cached voice states — regenerated automatically from the voice sample
 voices/*.safetensors
+
+# pywebview local storage files
+.pywebview_storage/
