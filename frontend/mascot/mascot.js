@@ -53,6 +53,9 @@ async function wakeUp() {
     model.internalModel.coreModel.setParameterValueById(
       "ParamMouthOpenY", mouthOpen
     );
+    model.internalModel.coreModel.setParameterValueById(
+      "ParamMouthOpen", mouthOpen
+    );
     return result;
   };
 
