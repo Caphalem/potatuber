@@ -149,6 +149,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+@app.middleware("http")
+async def no_cache(request, call_next):
+    """Localhost doesn't need caching.
+    Tell every client to always fetch fresh."""
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 @app.get("/config")
 async def get_config():
