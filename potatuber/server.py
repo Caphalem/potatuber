@@ -44,7 +44,7 @@ brain = Brain(
 
 t = time.perf_counter()
 print("   Loading ears (Whisper)...")
-ears = Ears(config.ears.whisper_model, config.ears.hotkey)
+ears = Ears(config.ears.whisper_model, config.ears.hotkey, config.ears.prompt)
 print(f"   ...ears ready in {time.perf_counter() - t:.1f}s")
 
 print("🥔 All organs ready!")

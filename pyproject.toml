@@ -14,7 +14,7 @@ dependencies = [
     "soundfile",
     "openai",
     "faster-whisper",
-    "keyboard",
+    "pynput",
     "pywebview"
 ]
 

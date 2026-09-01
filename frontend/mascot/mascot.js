@@ -25,11 +25,15 @@ async function wakeUp() {
 
   // Leading slash matters: this page lives at /mascot/, the model doesn't.
   const model = await PIXI.live2d.Live2DModel.from("/" + cfg.model, {
-    autoInteract: cfg.follow_mouse,
+    autoInteract: false // Python drives focus() — see follow_cursor()
   });
   app.stage.addChild(model);
   model.anchor.set(0.5, 0);
   model.x = window.innerWidth / 2;
+
+  // In ghost mode the window is click-through, so no pointer events ever
+  // reach us. Python reads the global cursor and calls this instead.
+  window.lookAt = (x, y) => model.focus(x, y);
 
   // Fit her to the window once, then let the user zoom on top of that.
   const baseScale = (window.innerHeight * 0.95) / model.internalModel.height;
@@ -50,12 +54,9 @@ async function wakeUp() {
   const originalUpdate = mm.update.bind(mm);
   mm.update = (...args) => {
     const result = originalUpdate(...args);
-    model.internalModel.coreModel.setParameterValueById(
-      "ParamMouthOpenY", mouthOpen
-    );
-    model.internalModel.coreModel.setParameterValueById(
-      "ParamMouthOpen", mouthOpen
-    );
+    for (const param of cfg.mouth_params) {
+      model.internalModel.coreModel.setParameterValueById(param, mouthOpen);
+    }
     return result;
   };
 
@@ -77,11 +78,24 @@ async function wakeUp() {
   const ws = new WebSocket(`ws://${location.host}/ws`);
 
   ws.onopen = () => {
-    // This page loads the model, so it's the one who reports her wardrobe.
     const expressions =
       (model.internalModel.settings.expressions ?? []).map((e) => e.Name);
+    // Every model gets a way back to her resting face, even if the rigger
+    // never made one. "neutral" isn't a real expression — see below.
+    if (!expressions.includes("neutral")) expressions.push("neutral");
     ws.send(JSON.stringify({ type: "model_info", expressions }));
   };
+
+    if (event.type === "set_expression") {
+      if (event.name === "neutral") {
+        // Not a file — this clears whatever expression is applied and
+        // returns her to the model's default parameters.
+        model.internalModel.motionManager.expressionManager?.resetExpression();
+      } else {
+        model.expression(event.name);
+      }
+    }
+
 
   let pendingSubtitle = null; // set by speak_start, scheduled by its audio
   let subtitleSeq = 0;
@@ -108,34 +122,46 @@ async function wakeUp() {
       playhead = Math.max(playhead, audioCtx.currentTime);
       source.start(playhead);
 
-      // Announce this sentence exactly when its audio starts playing —
-      // the mascot is the timing authority for everyone else.
+      // Announce this sentence exactly when its audio starts playing.
       if (pendingSubtitle !== null) {
         const text = pendingSubtitle;
         pendingSubtitle = null;
+        subtitleSeq++;
         const delay = (playhead - audioCtx.currentTime) * 1000;
-        const seq = ++subtitleSeq;
         setTimeout(() => {
           ws.send(JSON.stringify({ type: "now_saying", text }));
         }, delay);
-
-        // Clear after this sentence's audio ends — unless a newer
-        // sentence has taken the stage by then.
-        const clearDelay = delay + buffer.duration * 1000 + 400;
-        setTimeout(() => {
-          if (seq === subtitleSeq) {
-            ws.send(JSON.stringify({ type: "now_saying", text: "" }));
-          }
-        }, clearDelay);
       }
 
       playhead += buffer.duration;
+    }
+
+    if (event.type === "speak_end") {
+      if (pendingSubtitle !== null) {
+        // No audio ever came (an emoji-only "sentence") — drop it, or it
+        // would get shown on top of the NEXT sentence's audio.
+        pendingSubtitle = null;
+        return;
+      }
+      // All of this sentence's audio is queued now, so the playhead sits
+      // exactly at its end. That's when the subtitle should disappear —
+      // unless a newer sentence has taken the stage by then.
+      const seq = subtitleSeq;
+      const delay = (playhead - audioCtx.currentTime) * 1000 + 400;
+      setTimeout(() => {
+        if (seq === subtitleSeq) {
+          ws.send(JSON.stringify({ type: "now_saying", text: "" }));
+        }
+      }, delay);
     }
 
     if (event.type === "set_expression") {
       model.expression(event.name);
     }
   };
+
+  // Helps people whose rigger used non-standard names — see mouth_params.
+  console.log("Live2D parameters:", model.internalModel.coreModel.parameters.ids);
 }
 
 document.getElementById("wake").onclick = wakeUp;

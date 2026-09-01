@@ -48,7 +48,10 @@ def make_default_hands(expressions: list[str]) -> Hands:
             "type": "function",
             "function": {
                 "name": "set_expression",
-                "description": f"Change your facial expression. Available: {', '.join(expressions)}",
+                "description": (
+                    f"Change your facial expression. Use 'neutral' to return to your "
+                    f"resting face when a reaction has passed. Available: {', '.join(expressions)}"
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {

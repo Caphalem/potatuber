@@ -8,7 +8,7 @@ and where, instead of crashing mysteriously later.
 import tomllib
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CharacterConfig(BaseModel):
@@ -31,11 +31,14 @@ class VoiceConfig(BaseModel):
 class FaceConfig(BaseModel):
     model: str
     follow_mouse: bool = True
+    follow_rate: int = 15
+    mouth_params: list[str] = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
 
 
 class EarsConfig(BaseModel):
     whisper_model: str = "base.en"
     hotkey: str = "space"
+    prompt: str = "Pota-chan, PotaTuber, Live2D"
 
 
 class MascotConfig(BaseModel):
