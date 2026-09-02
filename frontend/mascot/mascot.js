@@ -31,9 +31,13 @@ async function wakeUp() {
   model.anchor.set(0.5, 0);
   model.x = window.innerWidth / 2;
 
-  // In ghost mode the window is click-through, so no pointer events ever
-  // reach us. Python reads the global cursor and calls this instead.
-  window.lookAt = (x, y) => model.focus(x, y);
+  // Python feeds us the cursor position (see follow_cursor). We store it as
+  // a target and ease toward it every frame — macOS delivers those updates
+  // unevenly, and this makes arrival timing stop mattering.
+  let lookTarget = null;
+  let lookCurrent = null;
+
+  window.lookAt = (x, y) => { lookTarget = { x, y }; };
 
   // Fit her to the window once, then let the user zoom on top of that.
   const baseScale = (window.innerHeight * 0.95) / model.internalModel.height;
@@ -72,6 +76,13 @@ async function wakeUp() {
     const volume = Math.sqrt(sum / samples.length);
     const target = Math.min(1, volume * 8);
     mouthOpen += (target - mouthOpen) * 0.3;
+
+    if (lookTarget) {
+      if (!lookCurrent) lookCurrent = { ...lookTarget };
+      lookCurrent.x += (lookTarget.x - lookCurrent.x) * 0.15;
+      lookCurrent.y += (lookTarget.y - lookCurrent.y) * 0.15;
+      model.focus(lookCurrent.x, lookCurrent.y);
+    }
   });
 
   // ── The pipe ──
