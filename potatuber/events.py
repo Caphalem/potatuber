@@ -53,6 +53,14 @@ class SetExpression(BaseModel):
     name: str
 
 
+class EyesState(BaseModel):
+    """Whether she's currently looking. Sent on connect and whenever it
+    changes, so every open console shows the same switch position."""
+    type: Literal["eyes_state"] = "eyes_state"
+    available: bool  # eyes configured at all?
+    enabled: bool    # ...and switched on right now?
+
+
 # ── Browser → Server ──────────────────────────────────────────
 
 
@@ -77,3 +85,9 @@ class NowSaying(BaseModel):
     """
     type: Literal["now_saying"] = "now_saying"
     text: str
+
+
+class SetEyes(BaseModel):
+    """The user flipped the vision switch in the console."""
+    type: Literal["set_eyes"] = "set_eyes"
+    enabled: bool

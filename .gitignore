@@ -16,6 +16,9 @@ positions.json
 # The dev Live2D models — booth license: personal use only, NO redistribution.
 frontend/models/
 
+# The cached, Live2D related JS libraries.
+frontend/vendor/
+
 # Cached voice states — regenerated automatically from the voice sample
 voices/*.safetensors
 

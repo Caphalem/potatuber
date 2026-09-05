@@ -33,12 +33,18 @@ class FaceConfig(BaseModel):
     follow_mouse: bool = True
     follow_rate: int = 15
     mouth_params: list[str] = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
+    idle_motion: str = ""
 
 
 class EarsConfig(BaseModel):
     whisper_model: str = "base.en"
     hotkey: str = "space"
     prompt: str = "Pota-chan, PotaTuber, Live2D"
+
+
+class EyesConfig(BaseModel):
+    enabled: bool = False
+    max_width: int = 1280
 
 
 class MascotConfig(BaseModel):
@@ -66,6 +72,7 @@ class Config(BaseModel):
     brain: BrainConfig
     voice: VoiceConfig
     ears: EarsConfig
+    eyes: EyesConfig
     face: FaceConfig
     mascot: MascotConfig
     subtitles: SubtitlesConfig

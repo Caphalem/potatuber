@@ -62,6 +62,11 @@ follow_mouse = false  # she watches your cursor. Some find it charming, some cre
 # they like, so if her mouth doesn't move, check the browser console —
 # PotaTuber prints every parameter your model has.
 mouth_params = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
+# Optional: a motion file to use as her idle animation instead of the
+# model's built-in one. The path is relative to the model folder, just like
+# the paths inside the .model3.json — e.g. "motions/sway.motion3.json".
+# Leave empty to keep the model's default idle.
+idle_motion = ""
 
 [ears]
 # Whisper model size: tiny.en, base.en, small.en... bigger = better + slower.
@@ -75,6 +80,13 @@ hotkey = "ctrl_r"  # hold to talk, release to send
 # mangle. A comma-separated list of names works well, or a natural sentence
 # if you want to nudge her toward a certain style of transcription.
 prompt = "Pota-chan, PotaTuber, Live2D"
+
+[eyes]
+# Send a screenshot of your primary display with every message. Needs a
+# vision-capable model (Ministral 3 has it) — and on macOS, Screen
+# Recording permission. Off by default: it costs prompt processing time.
+enabled = false
+max_width = 800
 
 [mascot]
 width = 400

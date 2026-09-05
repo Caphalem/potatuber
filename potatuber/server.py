@@ -17,16 +17,21 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from openai import APIConnectionError
 
+from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, NowSaying, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.events import AudioChunk, EyesState, NowSaying, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.eyes import Eyes
 from potatuber.hands import make_default_hands
 from potatuber.voice import Voice, make_speakable
 
 print("🥔 Waking up the potato...")
 
 config = load()
+
+print("   Checking frontend libraries...")
+vendor.ensure()
 
 t = time.perf_counter()
 print("   Loading voice (Pocket TTS)...")
@@ -47,6 +52,12 @@ print("   Loading ears (Whisper)...")
 ears = Ears(config.ears.whisper_model, config.ears.hotkey, config.ears.prompt)
 print(f"   ...ears ready in {time.perf_counter() - t:.1f}s")
 
+if config.eyes.enabled:
+    eyes = Eyes(config.eyes.max_width)
+    print("   Eyes ready")
+else:
+    eyes = None
+
 print("🥔 All organs ready!")
 
 clients: set[WebSocket] = set()
@@ -55,6 +66,11 @@ clients: set[WebSocket] = set()
 # the second one politely waits its turn instead of interleaving.
 conversation_lock = asyncio.Lock()
 
+eyes_on = {"value": False}  # always boots OFF — vision is expensive
+
+
+def eyes_state() -> EyesState:
+    return EyesState(available=eyes is not None, enabled=eyes_on["value"])
 
 async def broadcast(event) -> None:
     """Send one event to every connected page. Dead pages get dropped."""
@@ -91,11 +107,11 @@ async def speak(text: str) -> None:
     await broadcast(SpeakEnd())
 
 
-async def respond(user_text: str) -> None:
+async def respond(user_text: str, image: str | None) -> None:
     await broadcast(State(state="thinking"))
 
     try:
-        items = brain.think(user_text)
+        items = brain.think(user_text, image)
         await broadcast(State(state="speaking"))
         while (item := await asyncio.to_thread(next, items, None)) is not None:
             kind, payload = item
@@ -115,7 +131,8 @@ async def handle_user_text(text: str) -> None:
     """The one entrance for ALL input — ears, console, whatever comes later."""
     async with conversation_lock:
         await broadcast(YouSaid(text=text))
-        await respond(text)
+        image = await asyncio.to_thread(eyes.look) if eyes and eyes_on["value"] else None
+        await respond(text, image)
 
 
 async def listen_loop() -> None:
@@ -166,6 +183,7 @@ async def get_config():
 async def websocket_endpoint(ws: WebSocket) -> None:
     await ws.accept()
     clients.add(ws)
+    await broadcast(eyes_state())
     try:
         while True:
             data = await ws.receive_json()
@@ -184,6 +202,9 @@ async def websocket_endpoint(ws: WebSocket) -> None:
                     await handle_user_text(text)
             elif data.get("type") == "now_saying":
                 await broadcast(NowSaying(text=data.get("text", "")))
+            elif data.get("type") == "set_eyes" and eyes:
+                eyes_on["value"] = bool(data.get("enabled"))
+                await broadcast(eyes_state())
     except WebSocketDisconnect:
         pass
     finally:

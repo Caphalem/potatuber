@@ -45,7 +45,25 @@ class Brain:
             while len(self.messages) > 1 and self.messages[1]["role"] != "user":
                 del self.messages[1]  # ...and its whole exchange
 
-    def think(self, user_text):
+    def _ephemeral(self, user_text: str, image: str | None) -> dict:
+        """The user's latest message, with everything that should exist for
+        ONE request only glued on: character reminder, screenshot, whatever
+        comes later. None of it is ever stored in self.messages."""
+        text = user_text
+        if self.reminder:
+            text = f"[Reminder: {self.reminder}]\n\n{text}"
+        if image is None:
+            return {"role": "user", "content": text}
+        return {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": text},
+                {"type": "image_url",
+                 "image_url": {"url": f"data:image/jpeg;base64,{image}"}},
+            ],
+        }
+
+    def think(self, user_text, image: str | None):
         """Reply to the user, yielding items as they form:
             ("say", sentence)  — speak this
             ("event", event)   — a tool did something the browser should know
@@ -65,10 +83,7 @@ class Brain:
             while True:
                 request_messages = list(self.messages)
                 if self.reminder:
-                    request_messages[checkpoint] = {
-                        "role": "user",
-                        "content": f"[Reminder: {self.reminder}]\n\n{user_text}"
-                    }
+                    request_messages[checkpoint] = self._ephemeral(user_text, image)
 
                 stream = self.client.chat.completions.create(
                     model=self.model,

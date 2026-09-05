@@ -23,9 +23,27 @@ async function wakeUp() {
     backgroundAlpha: 0,
   });
 
-  // Leading slash matters: this page lives at /mascot/, the model doesn't.
-  const model = await PIXI.live2d.Live2DModel.from("/" + cfg.model, {
-    autoInteract: false // Python drives focus() — see follow_cursor()
+  // Fetch the model's settings ourselves so we can tweak them before
+  // Live2D sees them. The url field lets relative file paths resolve.
+  const settingsUrl = "/" + cfg.model;
+  const settings = await (await fetch(settingsUrl)).json();
+  settings.url = settingsUrl;
+
+  if (cfg.idle_motion) {
+    // pixi-live2d-display autoplays whatever is in the "Idle" group — so
+    // replacing that group is all it takes to give her a custom idle.
+    // (This is also the pattern you'd use to add a play_motion tool.)
+    settings.FileReferences.Motions ??= {};
+    // FadeInTime 0: idle motions loop forever, so there's nothing to fade in
+    // from — and a nonzero fade caused a strange progressive eyelid flicker
+    // whenever an expression was active. Zero fade fixed it.
+    settings.FileReferences.Motions.Idle = [
+      { File: cfg.idle_motion, FadeInTime: 0, FadeOutTime: 0 },
+    ];
+  }
+
+  const model = await PIXI.live2d.Live2DModel.from(settings, {
+    autoInteract: false, // Python drives focus() — see follow_cursor()
   });
   app.stage.addChild(model);
   model.anchor.set(0.5, 0);

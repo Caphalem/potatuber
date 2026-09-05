@@ -28,6 +28,11 @@ ws.onmessage = (msg) => {
     botLine.textContent += (botLine.textContent ? " " : "") + event.text;
     log.scrollTop = log.scrollHeight;
   }
+
+  if (event.type === "eyes_state") {
+    document.getElementById("eyes").style.display = event.available ? "inline" : "none";
+    document.getElementById("eyes-toggle").checked = event.enabled;
+  }
 };
 
 document.getElementById("chat").onsubmit = (e) => {
@@ -35,4 +40,8 @@ document.getElementById("chat").onsubmit = (e) => {
   const input = document.getElementById("text");
   ws.send(JSON.stringify({ type: "user_says", text: input.value }));
   input.value = "";
+};
+
+document.getElementById("eyes-toggle").onchange = (e) => {
+  ws.send(JSON.stringify({ type: "set_eyes", enabled: e.target.checked }));
 };

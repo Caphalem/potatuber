@@ -1,0 +1,26 @@
+"""The potato's eyes: takes a screenshot so she can see what you see.
+
+Optional — her brain needs a vision-capable model (Ministral 3 has it).
+The screenshot is EPHEMERAL: sent with one request, never saved to history, just like the reminder.
+"""
+
+import base64
+import io
+
+from PIL import ImageGrab
+
+
+class Eyes:
+    def __init__(self, max_width: int = 1280, quality: int = 70):
+        self.max_width = max_width
+        self.quality = quality
+
+    def look(self) -> str:
+        """Grab the primary display. Returns a base64 JPEG."""
+        image = ImageGrab.grab().convert("RGB")
+        if image.width > self.max_width:
+            ratio = self.max_width / image.width
+            image = image.resize((self.max_width, int(image.height * ratio)))
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG", quality=self.quality)
+        return base64.b64encode(buffer.getvalue()).decode()

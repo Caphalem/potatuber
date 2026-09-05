@@ -15,7 +15,8 @@ dependencies = [
     "openai",
     "faster-whisper",
     "pynput",
-    "pywebview"
+    "pywebview",
+    "pillow"
 ]
 
 [project.scripts]
