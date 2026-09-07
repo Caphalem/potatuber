@@ -21,7 +21,8 @@ from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, EyesState, NowSaying, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.events import AudioChunk, EyesState, NowSaying, SetExpression, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.vts import VTS
 from potatuber.eyes import Eyes
 from potatuber.hands import make_default_hands
 from potatuber.voice import Voice, make_speakable
@@ -58,6 +59,8 @@ if config.eyes.enabled:
 else:
     eyes = None
 
+vts = VTS(config.vts.port, config.vts.mouth_param, config.vts.mouth_gain) if config.vts.enabled else None
+
 print("🥔 All organs ready!")
 
 clients: set[WebSocket] = set()
@@ -71,6 +74,18 @@ eyes_on = {"value": False}  # always boots OFF — vision is expensive
 
 def eyes_state() -> EyesState:
     return EyesState(available=eyes is not None, enabled=eyes_on["value"])
+
+
+def learn_expressions(expressions: list[str]) -> None:
+    """Give her the set_expression tool for whatever body she's wearing."""
+    if "neutral" not in expressions:
+        expressions = expressions + ["neutral"]
+    brain.hands = make_default_hands(expressions)
+    brain.add_instructions(
+        f"You can change your look with the set_expression tool. "
+        f"Your available faces: {', '.join(expressions)}. Use them to react!"
+    )
+
 
 async def broadcast(event) -> None:
     """Send one event to every connected page. Dead pages get dropped."""
@@ -97,7 +112,16 @@ async def speak(text: str) -> None:
         return
 
     chunks = voice.say(speakable)
-    if config.voice.stream_audio:
+
+    if vts:
+        # VTube Studio is her body: Python plays the audio itself and streams
+        # the volume in as MouthOpen. That also makes US the timing authority,
+        # so the subtitle relay fires from here instead of from the browser.
+        audio = np.concatenate(await asyncio.to_thread(list, chunks))
+        await broadcast(NowSaying(text=text))
+        await asyncio.to_thread(vts.play, audio, voice.sample_rate)
+        await broadcast(NowSaying(text=""))
+    elif config.voice.stream_audio:
         while (chunk := await asyncio.to_thread(next, chunks, None)) is not None:
             await send_audio(chunk)
     else:
@@ -116,7 +140,10 @@ async def respond(user_text: str, image: str | None) -> None:
         while (item := await asyncio.to_thread(next, items, None)) is not None:
             kind, payload = item
             if kind == "event":
-                await broadcast(payload)
+                if vts and isinstance(payload, SetExpression):
+                    await vts.set_expression(payload.name)
+                else:
+                    await broadcast(payload)
             else:
                 await speak(payload)
     except APIConnectionError:
@@ -145,6 +172,15 @@ async def listen_loop() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if vts:
+        try:
+            print("   Connecting to VTube Studio...")
+            await vts.connect()
+            learn_expressions(await vts.expressions())
+            print("   ...connected!")
+        except OSError:
+            raise RuntimeError("Can't reach VTube Studio — is it running with the API enabled?")
+
     loop = asyncio.get_running_loop()
 
     def ears_loop():
@@ -188,14 +224,7 @@ async def websocket_endpoint(ws: WebSocket) -> None:
         while True:
             data = await ws.receive_json()
             if data.get("type") == "model_info":
-                expressions = data.get("expressions", [])
-                brain.hands = make_default_hands(expressions)
-                if expressions:
-                    brain.add_instructions(
-                        f"You can change your look with the set_expression "
-                        f"tool. Your available faces: {', '.join(expressions)}. "
-                        f"Use them to react!"
-                    )
+                learn_expressions(data.get("expressions", []))
             elif data.get("type") == "user_says":
                 text = data["text"].strip()
                 if text:

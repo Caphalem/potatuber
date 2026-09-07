@@ -13,6 +13,9 @@ config.toml
 # Delete this file to reset to the config's x/y defaults.
 positions.json
 
+# VTS Plugin token which let's PotaTuber talk to your specific VTube Studio.
+vts_token.json
+
 # The dev Live2D models — booth license: personal use only, NO redistribution.
 frontend/models/
 

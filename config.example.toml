@@ -62,6 +62,9 @@ follow_mouse = false  # she watches your cursor. Some find it charming, some cre
 # they like, so if her mouth doesn't move, check the browser console —
 # PotaTuber prints every parameter your model has.
 mouth_params = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
+# How much her voice opens her mouth. This depends on the model's rigging —
+# lower it if her mouth looks stuck open, raise it if quiet words barely move it.
+mouth_gain = 4
 # Optional: a motion file to use as her idle animation instead of the
 # model's built-in one. The path is relative to the model folder, just like
 # the paths inside the .model3.json — e.g. "motions/sway.motion3.json".
@@ -96,6 +99,17 @@ y = 214
 # Uses pynput's hotkey format — see:
 # https://pynput.readthedocs.io/en/latest/keyboard.html#global-hotkeys
 toggle_hotkey = "<ctrl>+<alt>+p"
+
+[vts]
+# Use a model loaded in VTube Studio as her body instead of the desktop mascot.
+# Requires "Allow Plugin API access" to be turned on in VTube Studio's settings.
+# The first run pops up a permission dialog in VTS — click Allow. The token is
+# saved to vts_token.json so you're only asked once.
+# The subtitle page still works in this mode (e.g. as an OBS browser source).
+enabled = false
+port = 8001               # VTube Studio's API port — shown in its settings
+mouth_param = "MouthOpen"  # the VTS tracking parameter driven by her voice
+mouth_gain = 4  # how much her voice opens her mouth. Lower if it looks stuck open.
 
 [subtitles]
 width = 800

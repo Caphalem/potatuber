@@ -92,7 +92,7 @@ async function wakeUp() {
       sum += dev * dev;
     }
     const volume = Math.sqrt(sum / samples.length);
-    const target = Math.min(1, volume * 8);
+    const target = Math.min(1, volume * cfg.mouth_gain);
     mouthOpen += (target - mouthOpen) * 0.3;
 
     if (lookTarget) {
@@ -106,25 +106,15 @@ async function wakeUp() {
   // ── The pipe ──
   const ws = new WebSocket(`ws://${location.host}/ws`);
 
-  ws.onopen = () => {
-    const expressions =
-      (model.internalModel.settings.expressions ?? []).map((e) => e.Name);
-    // Every model gets a way back to her resting face, even if the rigger
-    // never made one. "neutral" isn't a real expression — see below.
-    if (!expressions.includes("neutral")) expressions.push("neutral");
-    ws.send(JSON.stringify({ type: "model_info", expressions }));
-  };
-
-    if (event.type === "set_expression") {
-      if (event.name === "neutral") {
-        // Not a file — this clears whatever expression is applied and
-        // returns her to the model's default parameters.
-        model.internalModel.motionManager.expressionManager?.resetExpression();
-      } else {
-        model.expression(event.name);
-      }
+  if (event.type === "set_expression") {
+    if (event.name === "neutral") {
+      // Not a file — this clears whatever expression is applied and
+      // returns her to the model's default parameters.
+      model.internalModel.motionManager.expressionManager?.resetExpression();
+    } else {
+      model.expression(event.name);
     }
-
+  }
 
   let pendingSubtitle = null; // set by speak_start, scheduled by its audio
   let subtitleSeq = 0;

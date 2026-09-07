@@ -36,7 +36,12 @@ def main() -> None:
     url = f"http://{config.server.host}:{config.server.port}"
     headless = "--headless" in sys.argv
 
-    if not headless and not mascot.supported():
+    if config.vts.enabled:
+        # VTube Studio is her body — no mascot window needed. Everything
+        # else (console, subtitles, ears, brain) works exactly the same.
+        print("🥔 VTube Studio mode — make sure VTS is running with the API enabled.")
+        headless = True
+    elif not headless and not mascot.supported():
         print(f"🥔 Desktop mascot windows aren't supported on {sys.platform} yet.")
         print(f"   Running in browser mode instead — open {url}/mascot/")
         headless = True

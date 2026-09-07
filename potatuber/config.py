@@ -33,6 +33,7 @@ class FaceConfig(BaseModel):
     follow_mouse: bool = True
     follow_rate: int = 15
     mouth_params: list[str] = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
+    mouth_gain: float = 4
     idle_motion: str = ""
 
 
@@ -55,6 +56,13 @@ class MascotConfig(BaseModel):
     toggle_hotkey: str = "ctrl+alt+p"
 
 
+class VtsConfig(BaseModel):
+    enabled: bool = False
+    port: int = 8001
+    mouth_param: str = "MouthOpen"
+    mouth_gain: int = 4
+
+
 class SubtitlesConfig(BaseModel):
     width: int = 800
     height: int = 120
@@ -75,6 +83,7 @@ class Config(BaseModel):
     eyes: EyesConfig
     face: FaceConfig
     mascot: MascotConfig
+    vts: VtsConfig
     subtitles: SubtitlesConfig
     server: ServerConfig
 
