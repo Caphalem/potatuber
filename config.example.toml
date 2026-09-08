@@ -108,7 +108,13 @@ toggle_hotkey = "<ctrl>+<alt>+p"
 # The subtitle page still works in this mode (e.g. as an OBS browser source).
 enabled = false
 port = 8001               # VTube Studio's API port — shown in its settings
-mouth_param = "MouthOpen"  # the VTS tracking parameter driven by her voice
+# "model": she IS the loaded VTS model (you're not in the scene).
+# "item":  she's a Live2D item pinned to YOUR model — the companion on your
+#          shoulder. Load her as a regular model first, map her mouth to the
+#          "PotaTuberMouth" input, then "Load current model as Live2D Item".
+mode = "model"
+item_name = "PotaChan"    # her folder name in VTS's Items folder
+mouth_param = "MouthOpen"  # the VTS tracking parameter driven by her voice. Only used in "model" mode.
 mouth_gain = 4  # how much her voice opens her mouth. Lower if it looks stuck open.
 
 [subtitles]

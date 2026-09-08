@@ -7,6 +7,7 @@ and where, instead of crashing mysteriously later.
 
 import tomllib
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -59,8 +60,10 @@ class MascotConfig(BaseModel):
 class VtsConfig(BaseModel):
     enabled: bool = False
     port: int = 8001
+    mode: Literal["model", "item"] = "model"
+    item_name: str = "PotaChan"
     mouth_param: str = "MouthOpen"
-    mouth_gain: int = 4
+    mouth_gain: float = 4
 
 
 class SubtitlesConfig(BaseModel):

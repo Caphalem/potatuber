@@ -59,7 +59,7 @@ if config.eyes.enabled:
 else:
     eyes = None
 
-vts = VTS(config.vts.port, config.vts.mouth_param, config.vts.mouth_gain) if config.vts.enabled else None
+vts = VTS(config.vts) if config.vts.enabled else None
 
 print("🥔 All organs ready!")
 
