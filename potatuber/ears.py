@@ -45,6 +45,7 @@ class Ears:
         self.hotkey = hotkey
         self._key = _parse_key(hotkey)
         self._held = threading.Event()
+        self.on_hold = None  # optional: called with True on press, False on release
 
         # One listener for the whole session. It runs in its own thread and
         # just flips a flag — listen() watches that flag.
@@ -55,12 +56,18 @@ class Ears:
         listener.start()
 
     def _on_press(self, key):
-        if key == self._key:
+        if key == self._key and not self._held.is_set():
+            # Windows repeats key-down events while a key is held — the
+            # is_set() check makes sure we only announce the FIRST press.
             self._held.set()
+            if self.on_hold:
+                self.on_hold(True)
 
     def _on_release(self, key):
         if key == self._key:
             self._held.clear()
+            if self.on_hold:
+                self.on_hold(False)
 
     def listen(self) -> str:
         """Block until the user holds the hotkey and speaks. Returns the text."""

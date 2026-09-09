@@ -1,0 +1,141 @@
+/* ── Base ─────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5em 1em;   /* padding, not margin — margins don't count toward height */
+  font-family: sans-serif;
+  background: #2a2a2a;
+  color: #eee;
+}
+
+/* ── Connection banner ────────────────────────────────────────────── */
+
+#banner {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  background: #7a4b00;
+  color: #ffe1a8;
+}
+
+/* ── Header + toolbar ─────────────────────────────────────────────── */
+
+h3 { margin: 0 0 10px; }
+
+#toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #999;
+}
+
+#eyes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #444;
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+#eyes:has(:checked) {
+  border-color: #7c5cbf;
+  color: #eee;
+}
+
+#eyes input { accent-color: #7c5cbf; }
+
+/* ── Conversation log ─────────────────────────────────────────────── */
+
+#log {
+  flex: 1;              /* take all the leftover space... */
+  min-height: 0;        /* ...and actually shrink when needed (flex gotcha) */
+  overflow-y: auto;
+  padding: 1em;
+  background: #000;      /* the chalkboard */
+  border: 1px solid #444;
+  border-radius: 12px;
+}
+
+#log p { margin: 0 0 8px; }
+
+.you { color: #8ec07c; }
+.her { color: #eee; }
+
+/* ── Input bar ────────────────────────────────────────────────────── */
+
+#chat {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+
+#text {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #eee;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 999px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+#text:focus { border-color: #7c5cbf; }
+
+#chat button {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  background: #7c5cbf;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+#chat button:hover { background: #9070d8; }
+
+/* ── State indicator ──────────────────────────────────────────────── */
+
+#state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid #444;
+  border-radius: 999px;
+  background: #000;
+}
+#state i {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #555;
+  transition: background 0.2s ease;
+}
+#state b { color: #ccc }
+#state[data-state="listening"] i { background: #4fc3f7; }
+#state[data-state="thinking"]  i { background: #ffb74d; animation: pulse 1s infinite; }
+#state[data-state="speaking"]  i { background: #8ec07c; }
+
+@keyframes pulse {
+  50% { opacity: 0.3; }
+}

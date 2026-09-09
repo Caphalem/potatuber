@@ -21,7 +21,7 @@ from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, EyesState, NowSaying, SetExpression, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SpeakEnd, SpeakStart, State, YouSaid
 from potatuber.vts import VTS
 from potatuber.eyes import Eyes
 from potatuber.hands import make_default_hands
@@ -70,10 +70,21 @@ clients: set[WebSocket] = set()
 conversation_lock = asyncio.Lock()
 
 eyes_on = {"value": False}  # always boots OFF — vision is expensive
-
+current_state = {"value": "idle"}
 
 def eyes_state() -> EyesState:
     return EyesState(available=eyes is not None, enabled=eyes_on["value"])
+
+
+def history() -> History:
+    """What she remembers — which, thanks to max_history, is also exactly
+    what the console should show. Older exchanges she's forgotten don't
+    appear, and that's the truth about her memory."""
+    entries = []
+    for m in brain.messages[1:]:  # skip the system prompt
+        if m["role"] in ("user", "assistant") and m.get("content"):
+            entries.append({"role": m["role"], "text": m["content"]})
+    return History(messages=entries)
 
 
 def learn_expressions(expressions: list[str]) -> None:
@@ -85,6 +96,11 @@ def learn_expressions(expressions: list[str]) -> None:
         f"You can change your look with the set_expression tool. "
         f"Your available faces: {', '.join(expressions)}. Use them to react!"
     )
+
+
+async def set_state(state: str) -> None:
+    current_state["value"] = state
+    await broadcast(State(state=state))
 
 
 async def broadcast(event) -> None:
@@ -132,11 +148,11 @@ async def speak(text: str) -> None:
 
 
 async def respond(user_text: str, image: str | None) -> None:
-    await broadcast(State(state="thinking"))
+    await set_state("thinking")
+    speaking = False
 
     try:
         items = brain.think(user_text, image)
-        await broadcast(State(state="speaking"))
         while (item := await asyncio.to_thread(next, items, None)) is not None:
             kind, payload = item
             if kind == "event":
@@ -145,13 +161,18 @@ async def respond(user_text: str, image: str | None) -> None:
                 else:
                     await broadcast(payload)
             else:
+                if not speaking:
+                    # The first sentence just finished generating — NOW she's
+                    # speaking. Everything before this was genuinely thinking.
+                    await set_state("speaking")
+                    speaking = True
                 await speak(payload)
     except APIConnectionError:
         print("🥔 Can't reach the brain! Is LM Studio running, with the "
               f"server on, at {config.brain.base_url}?")
         await speak("I can't reach my brain right now...")
 
-    await broadcast(State(state="idle"))
+    await set_state("idle")
 
 
 async def handle_user_text(text: str) -> None:
@@ -182,6 +203,20 @@ async def lifespan(app: FastAPI):
             raise RuntimeError("Can't reach VTube Studio — is it running with the API enabled?")
 
     loop = asyncio.get_running_loop()
+
+    def on_hold(held: bool):
+        # Fires on pynput's listener thread — hop onto the event loop.
+        # Only fall back to idle if we were the ones who set "listening";
+        # releasing the key mid-reply shouldn't interrupt "speaking".
+        if held:
+            state = "listening"
+        elif current_state["value"] == "listening":
+            state = "idle"
+        else:
+            return
+        asyncio.run_coroutine_threadsafe(set_state(state), loop)
+
+    ears.on_hold = on_hold
 
     def ears_loop():
         # A daemon thread, NOT asyncio.to_thread: keyboard.wait() blocks
@@ -219,7 +254,8 @@ async def get_config():
 async def websocket_endpoint(ws: WebSocket) -> None:
     await ws.accept()
     clients.add(ws)
-    await broadcast(eyes_state())
+    await ws.send_text(eyes_state().model_dump_json())
+    await ws.send_text(history().model_dump_json())
     try:
         while True:
             data = await ws.receive_json()

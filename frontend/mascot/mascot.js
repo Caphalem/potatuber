@@ -49,6 +49,14 @@ async function wakeUp() {
   model.anchor.set(0.5, 0);
   model.x = window.innerWidth / 2;
 
+  if (cfg.idle_motion) {
+    // A custom idle owns her eyes — same rule as VTube Studio. Auto-blink
+    // would otherwise steal single frames at each loop boundary, advancing
+    // the blink one step at a time: a slow, creepy eyelid staircase.
+    // Want her to blink? Put blink keyframes in your idle motion.
+    model.internalModel.eyeBlink = undefined;
+  }
+
   // Python feeds us the cursor position (see follow_cursor). We store it as
   // a target and ease toward it every frame — macOS delivers those updates
   // unevenly, and this makes arrival timing stop mattering.
@@ -106,15 +114,13 @@ async function wakeUp() {
   // ── The pipe ──
   const ws = new WebSocket(`ws://${location.host}/ws`);
 
-  if (event.type === "set_expression") {
-    if (event.name === "neutral") {
-      // Not a file — this clears whatever expression is applied and
-      // returns her to the model's default parameters.
-      model.internalModel.motionManager.expressionManager?.resetExpression();
-    } else {
-      model.expression(event.name);
-    }
-  }
+  ws.onopen = () => {
+    // This page loads the model, so it's the one who reports her wardrobe.
+    // (The server adds "neutral" itself — it works for any body she wears.)
+    const expressions =
+      (model.internalModel.settings.expressions ?? []).map((e) => e.Name);
+    ws.send(JSON.stringify({ type: "model_info", expressions }));
+  };
 
   let pendingSubtitle = null; // set by speak_start, scheduled by its audio
   let subtitleSeq = 0;
@@ -175,7 +181,13 @@ async function wakeUp() {
     }
 
     if (event.type === "set_expression") {
-      model.expression(event.name);
+      if (event.name === "neutral") {
+        // Not a file — this clears whatever expression is applied and
+        // returns her to the model's default parameters.
+        model.internalModel.motionManager.expressionManager?.resetExpression();
+      } else {
+        model.expression(event.name);
+      }
     }
   };
 

@@ -61,6 +61,13 @@ class EyesState(BaseModel):
     enabled: bool    # ...and switched on right now?
 
 
+class History(BaseModel):
+    """The conversation so far, sent to a page when it connects. Only what was
+    actually said — no system prompt, no tool plumbing."""
+    type: Literal["history"] = "history"
+    messages: list[dict]  # [{"role": "user" | "assistant", "text": str}]
+
+
 # ── Browser → Server ──────────────────────────────────────────
 
 

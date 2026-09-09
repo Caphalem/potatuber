@@ -3,61 +3,21 @@
 <head>
   <meta charset="utf-8">
   <title>PotaTuber Console 🥔</title>
-  <style>
-    body { font-family: sans-serif; background: #2e2e2e; color: #eee;
-           max-width: 700px; margin: 2em auto; }
-    #log { height: 70vh; overflow-y: auto; border-radius: 12px;
-           border: 1px solid #333; background: #000000; padding: 1em; }
-    .you { color: #8ec07c; }
-
-    #chat {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    #text {
-      flex: 1;
-      padding: 12px 16px;
-      font-size: 15px;
-      color: #eee;
-      background: #1a1a1a;
-      border: 1px solid #444;
-      border-radius: 999px;
-      outline: none;
-      transition: border-color 0.15s ease;
-    }
-
-    #text:focus {
-      border-color: #7c5cbf;
-    }
-
-    #chat button {
-      padding: 12px 24px;
-      font-size: 15px;
-      font-weight: bold;
-      color: #fff;
-      background: #7c5cbf;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: background 0.15s ease;
-    }
-
-    #chat button:hover {
-      background: #9070d8;
-    }
-  </style>
+  <link rel="stylesheet" href="console.css">
 </head>
 <body>
+  <div id="banner">⚠️ Lost connection to PotaTuber — reconnecting…</div>
   <h3>PotaTuber Console 🥔</h3>
+  <div id="toolbar">
+    <span id="state"><i></i><b>idle</b></span>
+    <label id="eyes" style="display: none">
+      <input type="checkbox" id="eyes-toggle"> 👁️ Vision
+    </label>
+  </div>
   <div id="log"></div>
   <form id="chat">
     <input id="text" autocomplete="off" placeholder="Say something to her...">
     <button>Send</button>
-    <label id="eyes" style="display: none">
-      <input type="checkbox" id="eyes-toggle"> 👁️ Vision
-    </label>
   </form>
   <script src="console.js"></script>
 </body>
