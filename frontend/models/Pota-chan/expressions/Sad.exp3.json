@@ -1,0 +1,21 @@
+{
+    "Type": "Live2D Expression",
+    "IsModelCustomizationExpression": false,
+    "Parameters": [
+        {
+            "Id": "Expconfused",
+            "Value": 0.0,
+            "Blend": "Add"
+        },
+        {
+            "Id": "ExpHappy",
+            "Value": 0.0,
+            "Blend": "Add"
+        },
+        {
+            "Id": "ExpSad",
+            "Value": 10.0,
+            "Blend": "Add"
+        }
+    ]
+}

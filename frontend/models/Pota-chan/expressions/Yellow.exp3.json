@@ -1,0 +1,16 @@
+{
+    "Type": "Live2D Expression",
+    "IsModelCustomizationExpression": false,
+    "Parameters": [
+        {
+            "Id": "ScarfRed",
+            "Value": 0.0,
+            "Blend": "Add"
+        },
+        {
+            "Id": "ScarfYellow",
+            "Value": 1.0,
+            "Blend": "Add"
+        }
+    ]
+}
