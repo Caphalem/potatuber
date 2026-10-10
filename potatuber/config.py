@@ -27,6 +27,8 @@ class BrainConfig(BaseModel):
 class VoiceConfig(BaseModel):
     sample: str
     stream_audio: bool = False
+    pitch_shift: float = 0.0
+    language: str = "english"
 
 
 class FaceConfig(BaseModel):

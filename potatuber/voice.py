@@ -12,6 +12,7 @@ from typing import Iterator
 
 import numpy as np
 import re
+import soundfile as sf
 from pocket_tts import TTSModel, export_model_state
 
 # Matches emoji and other symbols Pocket TTS can't pronounce.
@@ -34,21 +35,56 @@ def make_speakable(text: str) -> str:
     text = re.sub(r"[*_#`~]+", "", text)  # markdown bold/italics/headers/code
     return text.strip()
 
+
+def _write_lowered(src: Path, dst: Path, ratio: float) -> None:
+    """Stretch the clip by `ratio` so it plays slower and deeper.
+
+    This deeper, "bigger-voiced" version is what the model actually clones —
+    it sits comfortably inside what Pocket TTS has heard before. Listen to
+    this file if a voice sounds off: it should sound like a natural person.
+    """
+    audio, sr = sf.read(src, dtype="float32")
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    positions = np.linspace(0, len(audio) - 1, round(len(audio) * ratio))
+    lowered = np.interp(positions, np.arange(len(audio)), audio)
+    sf.write(dst, lowered.astype(np.float32), sr)
+
+
 class Voice:
-    def __init__(self, voice_sample: str | Path):
+    def __init__(self, voice_sample: str | Path, pitch_shift: float = 0.0, language: str = "english"):
         """Load the TTS model and prepare the voice.
 
         The first time a voice sample is used, computing its "voice state"
         takes a little while — so we save the result next to the sample
         (as a .safetensors file) and load that instantly ever after.
+        
+        pitch_shift (semitones, e.g. 3.0): for squeaky/cartoon voices the
+        tiny model gets crunchy up high. So we clone a *lowered* copy of the
+        sample, then play the output back faster to lift it right back up.
+        The lift is free: self.sample_rate already includes it.
+
+        language: which Pocket TTS model to load — a language name, optionally
+        with "_24l" for the big "teacher" model the small one was distilled
+        from. Cleaner voices, ~3x slower. The cache is per model, since the
+        voice state's shape depends on the layer count.
         """
-        self.model = TTSModel.load_model()
-        self.sample_rate: int = self.model.sample_rate
+        self.model = TTSModel.load_model(language=language)
+        self.ratio = 2 ** (pitch_shift / 12)
+        self.sample_rate: int = round(self.model.sample_rate * self.ratio)
 
         voice_sample = Path(voice_sample)
-        cached = voice_sample.with_suffix(".safetensors")
+        shift_tag = f".shift{pitch_shift:+g}" if pitch_shift else ""
+        prompt = voice_sample
+        if pitch_shift:
+            prompt = voice_sample.with_name(f"{voice_sample.stem}{shift_tag}.wav")
+            if not prompt.exists():
+                _write_lowered(voice_sample, prompt, self.ratio)
+
+        # The voice state's shape depends on the model, so each one gets its own.
+        cached = voice_sample.with_name(f"{voice_sample.stem}{shift_tag}.{language}.safetensors")
         if not cached.exists():
-            state = self.model.get_state_for_audio_prompt(str(voice_sample))
+            state = self.model.get_state_for_audio_prompt(str(prompt))
             export_model_state(state, str(cached))
         self.voice_state = self.model.get_state_for_audio_prompt(str(cached))
 
@@ -78,7 +114,7 @@ if __name__ == "__main__":
 
     config = load()
     text = " ".join(sys.argv[1:]) or "Hello! I'm your potato. I can talk now!"
-    voice = Voice(config.voice.sample)
+    voice = Voice(config.voice.sample, config.voice.pitch_shift, config.voice.language)
 
     with sd.OutputStream(
         samplerate=voice.sample_rate, channels=1, dtype="int16"

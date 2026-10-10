@@ -36,7 +36,7 @@ vendor.ensure()
 
 t = time.perf_counter()
 print("   Loading voice (Pocket TTS)...")
-voice = Voice(config.voice.sample)
+voice = Voice(config.voice.sample, config.voice.pitch_shift, config.voice.language)
 print(f"   ...voice ready in {time.perf_counter() - t:.1f}s")
 
 print("   Connecting brain...") # This one's instant — it's just an HTTP client.

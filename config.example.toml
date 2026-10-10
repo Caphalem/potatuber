@@ -48,12 +48,28 @@ model = "local-model"                  # LM Studio ignores this and uses whateve
 max_history = 24000
 
 [voice]
-sample = "voices/default.mp3"  # a clean recording of one person talking
+sample = "voices/default.wav"  # a clean recording of one person talking
 # false = each sentence arrives as one complete audio clip. Slightly slower
 #         to start, but can never stutter. Best for weaker machines.
 # true  = audio streams in tiny chunks as it's generated. Faster response,
 #         but may stutter if your CPU can't keep up with itself.
 stream_audio = false
+# For squeaky or cartoonish voices (like Pota-chan). The little model
+# gets crunchy up high, so instead we clone a *lowered* copy of your sample
+# and play her back faster to lift it right back up — the same trick cartoon
+# voices have used since forever. In semitones: 3 to 5 is the sweet spot,
+# 0 turns it off. Each value gets its own cache next to the sample, and the
+# lowered clip is saved there too — if she sounds off, listen to that file.
+# It should sound like a perfectly natural person, just deeper.
+pitch_shift = 4.0
+# Which Pocket TTS model to use. "english" is the small, fast default and
+# what most machines should run. "english_2026-09_24l" is the big "teacher"
+# model it was distilled from — noticeably cleaner voices, especially
+# squeaky ones, but about 3x slower. Even on a fast CPU she'll generate
+# speech only just as fast as she speaks it, so pair it with
+# stream_audio = false or she'll stutter. Multilingual: french, german,
+# spanish, italian, portuguese, dutch (add "_24l" for the big versions like "dutch_24l").
+language = "english"
 
 [face]
 model = "models/your_model_folder/your_model.model3.json"
