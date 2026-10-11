@@ -9,7 +9,7 @@ needs to tell the browser something (like changing her expression), it can
 return (string, [events]) instead.
 """
 
-from potatuber.events import SetExpression
+from potatuber.events import SetExpression, SetToggle
 
 
 class Hands:
@@ -34,8 +34,8 @@ class Hands:
         return result, []
 
 
-def make_default_hands(expressions: list[str]) -> Hands:
-    """The potato's starter kit: one tool, her own face."""
+def make_default_hands(expressions: list[str], toggles: list[str]) -> Hands:
+    """The potato's starter kit."""
     hands = Hands()
 
     if expressions:  # no expressions in the model = she never gets this tool
@@ -49,7 +49,7 @@ def make_default_hands(expressions: list[str]) -> Hands:
             "function": {
                 "name": "set_expression",
                 "description": (
-                    f"Change your facial expression. Use 'neutral' to return to your "
+                    f"Change your facial expression. Use 'Neutral' to return to your "
                     f"resting face when a reaction has passed. Available: {', '.join(expressions)}"
                 ),
                 "parameters": {
@@ -62,6 +62,33 @@ def make_default_hands(expressions: list[str]) -> Hands:
                         }
                     },
                     "required": ["name"],
+                },
+            },
+        })
+
+    if toggles:  # same rules as expressions
+        def set_toggle(name: str, on: bool = True):
+            if name not in toggles:
+                return f"You don't have a '{name}' toggle. You have: {list(toggles)}"
+            return (f"'{name}' is now {'on' if on else 'off'}.",
+                    [SetToggle(name=name, on=on)])
+
+        hands.register(set_toggle, {
+            "type": "function",
+            "function": {
+                "name": "set_toggle",
+                "description": (
+                    f"Put on or take off an outfit piece. Unlike expressions, "
+                    f"toggles stay until you switch them off. Available: {', '.join(toggles)}"
+                ),
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "enum": list(toggles)},
+                        "on": {"type": "boolean",
+                               "description": "true to put it on, false to take it off"},
+                    },
+                    "required": ["name", "on"],
                 },
             },
         })

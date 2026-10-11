@@ -72,7 +72,7 @@ pitch_shift = 4.0
 language = "english"
 
 [face]
-model = "models/your_model_folder/your_model.model3.json"
+model = "models/Pota-chan/Pota-chan.model3.json"
 follow_mouse = false  # she watches your cursor. Some find it charming, some creepy.
 # Which model parameter(s) control her mouth. Riggers name these however
 # they like, so if her mouth doesn't move, check the browser console —
@@ -80,12 +80,25 @@ follow_mouse = false  # she watches your cursor. Some find it charming, some cre
 mouth_params = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
 # How much her voice opens her mouth. This depends on the model's rigging —
 # lower it if her mouth looks stuck open, raise it if quiet words barely move it.
-mouth_gain = 4
+mouth_gain = 6
 # Optional: a motion file to use as her idle animation instead of the
 # model's built-in one. The path is relative to the model folder, just like
 # the paths inside the .model3.json — e.g. "motions/sway.motion3.json".
 # Leave empty to keep the model's default idle.
 idle_motion = ""
+# Expressions that are OUTFITS, not emotions: they stay on until switched
+# off, and making a face doesn't remove them. Names must match entries in
+# the model's Expressions list. Everything not listed here is an emotion.
+toggles = ["RedScarf", "YellowScarf", "BlueScarf"]
+# Vowel shapes (optional). We can't hear vowels, but we can hear brightness:
+# wide "ee" sounds are bright, round "oo" sounds are dark — the same trick
+# VTube Studio's mic lip sync uses. Maps that onto this parameter (-1 =
+# round, +1 = wide) while she speaks. Empty string turns it off.
+mouth_form_param = "ParamMouthForm"
+# Brightness range in Hz mapped to round..wide. Tune by ear per voice: lower
+# the first number if her mouth is always wide, raise the second if it's
+# always round. Pota-chan's pitched-up voice sits brighter than most.
+mouth_form_range = [1750, 2800]
 
 [ears]
 # Whisper model size: tiny.en, base.en, small.en... bigger = better + slower.
@@ -129,9 +142,17 @@ port = 8001               # VTube Studio's API port — shown in its settings
 #          shoulder. Load her as a regular model first, map her mouth to the
 #          "PotaTuberMouth" input, then "Load current model as Live2D Item".
 mode = "model"
-item_name = "PotaChan"    # her folder name in VTS's Items folder
+item_name = "Pota-chan"    # her folder name in VTS's Items folder
 mouth_param = "MouthOpen"  # the VTS tracking parameter driven by her voice. Only used in "model" mode.
-mouth_gain = 4  # how much her voice opens her mouth. Lower if it looks stuck open.
+mouth_gain = 3  # how much her voice opens her mouth. Lower if it looks stuck open.
+# VTS input parameter for vowel shapes (0 = round, 1 = wide). Map your
+# model's ParamMouthForm to it. Empty string turns it off. Uses the same
+# [face] mouth_form_range, since brightness is about her VOICE, not her body.
+mouth_form_param = "MouthSmile"
+# Only these expressions are HERS. Empty = all of them, which is right when
+# she's the whole model. For models with a built-in mascot, list just the
+# mascot's expressions so she never touches your face.
+expressions = []
 
 [subtitles]
 width = 800

@@ -7,14 +7,20 @@ let mouthOpen = 0; // written by the volume meter, read by the puppet
 async function wakeUp() {
   document.getElementById("wake").style.display = "none";
 
-  const cfg = await (await fetch("/config")).json();
+  const full = await (await fetch("/config")).json();
+  const cfg = full.face;
 
   // ── Audio: one analyser sits between all speech and the speakers ──
   const audioCtx = new AudioContext();
   const analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 256;
+  analyser.fftSize = 1024;
   analyser.connect(audioCtx.destination);
   let playhead = 0;
+
+  // ── Mouth form: a crude vowel shape from spectral brightness ──
+  const spectrum = new Uint8Array(analyser.frequencyBinCount);
+  const hzPerBin = audioCtx.sampleRate / analyser.fftSize;
+  let mouthForm = 0;
 
   // ── Stage: PixiJS canvas + the Live2D model ──
   const app = new PIXI.Application({
@@ -28,6 +34,9 @@ async function wakeUp() {
   const settingsUrl = "/" + cfg.model;
   const settings = await (await fetch(settingsUrl)).json();
   settings.url = settingsUrl;
+  // Her expressions come from scanning the folder, not from this array —
+  // see scan_expressions() in server.py. Same rule as VTube Studio.
+  settings.FileReferences.Expressions = full.expressions;
 
   if (cfg.idle_motion) {
     // pixi-live2d-display autoplays whatever is in the "Idle" group — so
@@ -78,19 +87,52 @@ async function wakeUp() {
     localStorage.setItem("zoom", zoom);
   });
 
+  // ── Toggles: outfit pieces that survive her emotions ──
+  // pixi-live2d-display only holds ONE expression at a time, so a scarf
+  // routed through model.expression() would vanish the moment she smiled.
+  // Instead we load the toggle files ourselves and apply their parameters
+  // every frame — in the same hook as the mouth flap.
+  const modelDir = cfg.model.substring(0, cfg.model.lastIndexOf("/") + 1);
+  const toggles = {};               // name -> [{Id, Value, Blend}]
+  const activeToggles = new Set();
+  for (const e of model.internalModel.settings.expressions ?? []) {
+    if (!cfg.toggles.includes(e.Name)) continue;
+    const exp = await (await fetch("/" + modelDir + e.File)).json();
+    toggles[e.Name] = exp.Parameters;
+  }
+
+  // Toggles are applied AFTER the motion manager saves its parameters — the
+  // same place expressions live. Applying them before the save bakes their
+  // Add values into the baseline forever (ask the yellow scarf).
+  model.internalModel.on("beforeModelUpdate", () => {
+    const core = model.internalModel.coreModel;
+    for (const name of activeToggles) {
+      for (const p of toggles[name]) {
+        const blend = p.Blend ?? "Add";
+        if (blend === "Add") core.addParameterValueById(p.Id, p.Value);
+        else if (blend === "Multiply") core.multiplyParameterValueById(p.Id, p.Value);
+        else core.setParameterValueById(p.Id, p.Value);
+      }
+    }
+  });
+
   // ── Mouth flap: idle motions overwrite parameters every frame, so we
   // sneak our mouth value in right AFTER the motion update. ──
   const mm = model.internalModel.motionManager;
   const originalUpdate = mm.update.bind(mm);
   mm.update = (...args) => {
     const result = originalUpdate(...args);
+    const core = model.internalModel.coreModel;
+    if (cfg.mouth_form_param && Math.abs(mouthForm) > 0.01) {
+      core.setParameterValueById(cfg.mouth_form_param, mouthForm);
+    }
     for (const param of cfg.mouth_params) {
-      model.internalModel.coreModel.setParameterValueById(param, mouthOpen);
+      core.setParameterValueById(param, mouthOpen);
     }
     return result;
   };
 
-  // ── Volume meter: how loud is she right now? → how open is the mouth ──
+  // ── Volume meter: how loud is she right now? → how open is the mouth and in what form ──
   const samples = new Uint8Array(analyser.fftSize);
   app.ticker.add(() => {
     analyser.getByteTimeDomainData(samples);
@@ -102,6 +144,30 @@ async function wakeUp() {
     const volume = Math.sqrt(sum / samples.length);
     const target = Math.min(1, volume * cfg.mouth_gain);
     mouthOpen += (target - mouthOpen) * 0.3;
+
+    if (cfg.mouth_form_param) {
+      if (mouthOpen > 0.05) {
+        analyser.getByteFrequencyData(spectrum);
+        // Only the speech band: the crunchy cloning artifacts above ~6 kHz
+        // would otherwise drag the centroid bright on every voice.
+        const maxBin = Math.min(spectrum.length, Math.floor(6000 / hzPerBin));
+        let weighted = 0, total = 0;
+        for (let i = 0; i < maxBin; i++) {
+          weighted += i * hzPerBin * spectrum[i];
+          total += spectrum[i];
+        }
+        const centroid = total ? weighted / total : 0;
+        const [lo, hi] = cfg.mouth_form_range;
+        const t = (centroid - lo) / (hi - lo);
+        const target = Math.max(-1, Math.min(1, t * 2 - 1));
+        mouthForm += (target - mouthForm) * 0.25;
+      } else {
+        // Silent: ease back to neutral. Because we write BEFORE the motion
+        // manager saves, our value becomes the baseline — so the last vowel
+        // would stick to her face forever if we just stopped writing.
+        mouthForm += (0 - mouthForm) * 0.1;
+      }
+    }
 
     if (lookTarget) {
       if (!lookCurrent) lookCurrent = { ...lookTarget };
@@ -189,10 +255,28 @@ async function wakeUp() {
         model.expression(event.name);
       }
     }
+
+    if (event.type === "set_toggle") {
+      if (event.on) {
+        // Toggles that touch the same parameters are mutually exclusive —
+        // a rigger zeroing a sibling's parameter is the tell.
+        const ids = new Set(toggles[event.name].map((p) => p.Id));
+        for (const other of activeToggles) {
+          if (toggles[other].some((p) => ids.has(p.Id))) activeToggles.delete(other);
+        }
+        activeToggles.add(event.name);
+      } else {
+        activeToggles.delete(event.name);
+      }
+    }
   };
 
   // Helps people whose rigger used non-standard names — see mouth_params.
-  console.log("Live2D parameters:", model.internalModel.coreModel.parameters.ids);
+  // coreModel is the framework wrapper; getModel() is the raw Cubism core.
+  console.log(
+    "Live2D parameters:",
+    model.internalModel.coreModel.getModel().parameters.ids
+  );
 }
 
 document.getElementById("wake").onclick = wakeUp;

@@ -5,6 +5,9 @@ const log = document.getElementById("log");
 const banner = document.getElementById("banner");
 let ws = null;
 let botLine = null; // her sentences accumulate into one entry per reply
+let herName = "Her";
+let wake = null;
+let cancel = null;
 
 function append(cls, text) {
   const p = document.createElement("p");
@@ -13,6 +16,30 @@ function append(cls, text) {
   log.appendChild(p);
   log.scrollTop = log.scrollHeight;
   return p;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, ms);
+    cancel = () => { clearTimeout(timer); resolve(); };
+  });
+}
+
+async function waitForServer() {
+  // Knock on the HTTP door until someone answers, THEN open the socket.
+  // Each knock gets 2 seconds — some browsers (Librewolf) let a fetch to a
+  // vanished server hang for 90s instead of failing fast.
+  while (true) {
+    const abort = new AbortController();
+    const timeout = setTimeout(() => abort.abort(), 2000);
+    cancel = () => abort.abort();
+    try {
+      const r = await fetch("/config", { cache: "no-store", signal: abort.signal });
+      if (r.ok) return;
+    } catch {}
+    clearTimeout(timeout);
+    await sleep(1000);
+  }
 }
 
 function connect() {
@@ -32,7 +59,7 @@ function connect() {
       botLine = null;
       for (const m of event.messages) {
         if (m.role === "user") append("you", "You: " + m.text);
-        else append("her", m.text);
+        else append("her", herName + ": " + m.text);
       }
     }
 
@@ -42,8 +69,8 @@ function connect() {
     }
 
     if (event.type === "speak_start") {
-      if (!botLine) botLine = append("her", "");
-      botLine.textContent += (botLine.textContent ? " " : "") + event.text;
+      if (!botLine) botLine = append("her", herName + ":");
+      botLine.textContent += " " + event.text;
       log.scrollTop = log.scrollHeight;
     }
 
@@ -60,14 +87,18 @@ function connect() {
   };
 
   ws.onclose = () => {
-    // The backend went away — restarted, probably. Keep knocking until it's
-    // back; the history event will rebuild the log when it is.
     banner.style.display = "block";
-    setTimeout(connect, 1000);
+    waitForServer().then(connect);
   };
 }
 
-connect();
+(async () => {
+  const cfg = await (await fetch("/config")).json();
+  herName = cfg.character.name;
+  document.title = `${herName} - PotaTuber Console 🥔`;
+  connect();
+})();
+
 
 document.getElementById("chat").onsubmit = (e) => {
   e.preventDefault();
@@ -80,3 +111,5 @@ document.getElementById("chat").onsubmit = (e) => {
 document.getElementById("eyes-toggle").onchange = (e) => {
   ws.send(JSON.stringify({ type: "set_eyes", enabled: e.target.checked }));
 };
+
+document.getElementById("reconnect").onclick = () => { if (cancel) cancel(); };

@@ -6,16 +6,7 @@
 			"Pota-chan.4096/texture_00.png"
 		],
 		"Physics": "Pota-chan.physics3.json",
-		"DisplayInfo": "Pota-chan.cdi3.json",
-		"Expressions": [
-            { "Name": "happy", "File": "expressions/Happy.exp3.json" },
-            { "Name": "angry", "File": "expressions/Angry.exp3.json" },
-            { "Name": "confused", "File": "expressions/Confused.exp3.json" },
-            { "Name": "sad", "File": "expressions/Sad.exp3.json" },
-            { "Name": "change-scarf-to-red", "File": "expressions/Red.exp3.json" },
-            { "Name": "change-scarf-to-yellow", "File": "expressions/Yellow.exp3.json" },
-            { "Name": "change-scarf-to-blue", "File": "expressions/Blue.exp3.json" }
-        ]
+		"DisplayInfo": "Pota-chan.cdi3.json"
 	},
 	"Groups": [
 		{

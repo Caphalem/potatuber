@@ -9,6 +9,7 @@ the ears, which live here in Python-land).
 import asyncio
 import base64
 from contextlib import asynccontextmanager
+from pathlib import Path
 import threading
 import time
 
@@ -21,15 +22,18 @@ from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, YouSaid
 from potatuber.vts import VTS
 from potatuber.eyes import Eyes
 from potatuber.hands import make_default_hands
 from potatuber.voice import Voice, make_speakable
 
-print("🥔 Waking up the potato...")
+
+EXP_SUFFIX = ".exp3.json"
 
 config = load()
+
+print(f"🥔 Waking up {config.character.name}...")
 
 print("   Checking frontend libraries...")
 vendor.ensure()
@@ -59,7 +63,10 @@ if config.eyes.enabled:
 else:
     eyes = None
 
-vts = VTS(config.vts) if config.vts.enabled else None
+vts = (
+    VTS(config.vts, toggles=config.face.toggles, form_range=config.face.mouth_form_range)
+    if config.vts.enabled else None
+)
 
 print("🥔 All organs ready!")
 
@@ -87,15 +94,40 @@ def history() -> History:
     return History(messages=entries)
 
 
+def scan_expressions(model_path: str) -> list[dict]:
+    """Find every expression in the model folder, however it's nested.
+
+    Normally pixi-live2d-display only knows about expressions listed in the
+    model3.json "Expressions" array — but VTube Studio ignores that array and
+    scans the folder instead, so riggers who only test in VTS routinely leave
+    it empty. We do what VTS does: scan, and name each expression after its
+    file. The frontend then injects this list into the settings before the
+    library sees them, so the array in the file no longer matters.
+    """
+    model_dir = Path("frontend") / Path(model_path).parent
+    return [
+        {"Name": p.name[:-len(EXP_SUFFIX)], "File": p.relative_to(model_dir).as_posix()}
+        for p in sorted(model_dir.rglob(f"*{EXP_SUFFIX}"))
+    ]
+
+
 def learn_expressions(expressions: list[str]) -> None:
-    """Give her the set_expression tool for whatever body she's wearing."""
-    if "neutral" not in expressions:
-        expressions = expressions + ["neutral"]
-    brain.hands = make_default_hands(expressions)
-    brain.add_instructions(
-        f"You can change your look with the set_expression tool. "
-        f"Your available faces: {', '.join(expressions)}. Use them to react!"
-    )
+    """Give her tools for whatever body she's wearing: faces AND outfits."""
+    toggles = [e for e in expressions if e in config.face.toggles]
+    emotions = [e for e in expressions if e not in config.face.toggles]
+    if "Neutral" not in emotions:
+        emotions.append("Neutral")
+    brain.hands = make_default_hands(emotions, toggles)
+
+    note = (f"You can change your look with the set_expression tool. "
+            f"Your available faces: {', '.join(emotions)}. Use them to react!")
+    if toggles:
+        note += (f" You also have outfit pieces: {', '.join(toggles)}. Use set_toggle "
+                 f"to put them on or take them off — they stay until you change them.")
+    brain.add_instructions(note)
+
+    print(f"🥔 Learned faces: {', '.join(emotions)}"
+          + (f" | outfits: {', '.join(toggles)}" if toggles else ""))
 
 
 async def set_state(state: str) -> None:
@@ -158,6 +190,8 @@ async def respond(user_text: str, image: str | None) -> None:
             if kind == "event":
                 if vts and isinstance(payload, SetExpression):
                     await vts.set_expression(payload.name)
+                elif vts and isinstance(payload, SetToggle):
+                    await vts.set_toggle(payload.name, payload.on)
                 else:
                     await broadcast(payload)
             else:
@@ -186,7 +220,11 @@ async def handle_user_text(text: str) -> None:
 async def listen_loop() -> None:
     """The ears run globally now — one mic, no matter how many pages."""
     while True:
-        text = await asyncio.to_thread(ears.listen)
+        try:
+            text = ears.listen()
+        except Exception as e:
+            print(f"🥔 Ears hiccup: {type(e).__name__}: {e}")
+            continue
         if text:
             await handle_user_text(text)
 
@@ -247,7 +285,11 @@ async def no_cache(request, call_next):
 
 @app.get("/config")
 async def get_config():
-    return config.face
+    return {
+        "character": {"name": config.character.name},
+        "face": config.face,
+        "expressions": scan_expressions(config.face.model),
+    }
 
 
 @app.websocket("/ws")

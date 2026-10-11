@@ -7,11 +7,11 @@ Try it standalone:
     uv run python -m potatuber.voice "Hello! I'm your potato."
 """
 
+import re
 from pathlib import Path
 from typing import Iterator
 
 import numpy as np
-import re
 import soundfile as sf
 from pocket_tts import TTSModel, export_model_state
 

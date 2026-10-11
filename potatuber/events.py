@@ -53,6 +53,14 @@ class SetExpression(BaseModel):
     name: str
 
 
+class SetToggle(BaseModel):
+    """She put on (or took off) an outfit piece. Toggles are expressions that
+    STAY on until switched off — making a face doesn't remove them."""
+    type: Literal["set_toggle"] = "set_toggle"
+    name: str
+    on: bool
+
+
 class EyesState(BaseModel):
     """Whether she's currently looking. Sent on connect and whenever it
     changes, so every open console shows the same switch position."""

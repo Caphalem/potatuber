@@ -36,8 +36,11 @@ class FaceConfig(BaseModel):
     follow_mouse: bool = True
     follow_rate: int = 15
     mouth_params: list[str] = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
-    mouth_gain: float = 4
+    mouth_gain: float = 6
     idle_motion: str = ""
+    toggles: list[str] = []
+    mouth_form_param: str = "ParamMouthForm"
+    mouth_form_range: list[float] = [1750, 2800]
 
 
 class EarsConfig(BaseModel):
@@ -65,7 +68,9 @@ class VtsConfig(BaseModel):
     mode: Literal["model", "item"] = "model"
     item_name: str = "PotaChan"
     mouth_param: str = "MouthOpen"
-    mouth_gain: float = 4
+    mouth_gain: float = 6
+    mouth_form_param: str = "MouthSmile"
+    expressions: list[str] = ""
 
 
 class SubtitlesConfig(BaseModel):

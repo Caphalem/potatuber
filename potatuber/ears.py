@@ -84,7 +84,9 @@ class Ears:
             while self._held.is_set():
                 sd.sleep(50)
 
-        audio = np.concatenate(recorded)[:, 0]
+        audio = np.concatenate(recorded)[:, 0] if recorded else np.zeros(0, np.float32)
+        if len(audio) < SAMPLE_RATE * 0.3:
+            return ""  # a tap, not speech — Whisper hallucinates on tiny clips
         segments, _ = self.model.transcribe(audio, initial_prompt=self.prompt or None)
         text = " ".join(s.text for s in segments).strip()
 

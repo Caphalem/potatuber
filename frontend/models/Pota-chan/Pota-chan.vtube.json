@@ -11,15 +11,15 @@
     "ModelSaveMetadata": {
         "LastSavedVTubeStudioVersion": "1.35.10",
         "LastSavedPlatform": "Steam",
-        "LastSavedDateUTC": "Wednesday, 23 September 2026, 16:25:51",
-        "LastSavedDateLocalTime": "Wednesday, 23 September 2026, 19:25:51",
-        "LastSavedDateUnixMillisecondTimestamp": "1790180751793",
-        "TotalSaveCount": 171
+        "LastSavedDateUTC": "Sunday, 11 October 2026, 18:35:16",
+        "LastSavedDateLocalTime": "Sunday, 11 October 2026, 21:35:16",
+        "LastSavedDateUnixMillisecondTimestamp": "1791743716038",
+        "TotalSaveCount": 280
     },
     "SavedModelPosition": {
         "Position": {
-            "x": -0.08715319633483887,
-            "y": -0.5228732824325562,
+            "x": 0.0,
+            "y": 0.0,
             "z": 0.0
         },
         "Rotation": {
@@ -29,8 +29,8 @@
             "w": 1.0
         },
         "Scale": {
-            "x": 0.9993072152137756,
-            "y": 0.9993072152137756,
+            "x": 1.0,
+            "y": 1.0,
             "z": 1.0
         }
     },
@@ -233,7 +233,7 @@
         {
             "Folder": "",
             "Name": "Mouth Smile",
-            "Input": "MouthSmile",
+            "Input": "PotaTuberMouthForm",
             "InputRangeLower": 0.0,
             "InputRangeUpper": 1.0,
             "OutputRangeLower": -1.0,
@@ -249,7 +249,7 @@
         {
             "Folder": "",
             "Name": "Mouth Open",
-            "Input": "MouthOpen",
+            "Input": "PotaTuberMouth",
             "InputRangeLower": 0.0,
             "InputRangeUpper": 1.0,
             "OutputRangeLower": 0.0,
@@ -259,7 +259,7 @@
             "UseBlinking": false,
             "UseBreathing": false,
             "OutputLive2D": "ParamMouthOpenY",
-            "Smoothing": 0,
+            "Smoothing": 10,
             "Minimized": false
         },
         {
@@ -484,7 +484,7 @@
                 }
             },
             "Triggers": {
-                "Trigger1": "N1",
+                "Trigger1": "",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1
@@ -603,7 +603,7 @@
                 }
             },
             "Triggers": {
-                "Trigger1": "N2",
+                "Trigger1": "",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1
@@ -632,9 +632,9 @@
         },
         {
             "HotkeyID": "0b79d536427441078b17dbdad245f476",
-            "Name": "Red",
+            "Name": "RedScarf",
             "Action": "ToggleExpression",
-            "File": "Red.exp3.json",
+            "File": "RedScarf.exp3.json",
             "Folder": "",
             "AutoCreated": false,
             "Position": {
@@ -722,7 +722,7 @@
                 }
             },
             "Triggers": {
-                "Trigger1": "Q",
+                "Trigger1": "",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1
@@ -841,7 +841,7 @@
                 }
             },
             "Triggers": {
-                "Trigger1": "N3",
+                "Trigger1": "",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1
@@ -870,9 +870,9 @@
         },
         {
             "HotkeyID": "357826fe476847e1aba44075ad9b587f",
-            "Name": "Yellow",
+            "Name": "YellowScarf",
             "Action": "ToggleExpression",
-            "File": "Yellow.exp3.json",
+            "File": "YellowScarf.exp3.json",
             "Folder": "",
             "AutoCreated": false,
             "Position": {
@@ -960,7 +960,7 @@
                 }
             },
             "Triggers": {
-                "Trigger1": "W",
+                "Trigger1": "",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1
@@ -1079,7 +1079,245 @@
                 }
             },
             "Triggers": {
-                "Trigger1": "N4",
+                "Trigger1": "",
+                "Trigger2": "",
+                "Trigger3": "",
+                "ScreenButton": -1
+            },
+            "SoundConfig": {
+                "SoundActive": false,
+                "StopWhenInactive": false,
+                "StopFadeOutSeconds": 2.0,
+                "SoundSlots": []
+            },
+            "IsGlobal": true,
+            "IsActive": true,
+            "Minimized": false,
+            "StopsOnLastFrame": false,
+            "DeactivateAfterKeyUp": false,
+            "OnlyLoadOneRandomItem": false,
+            "DeactivateAfterSeconds": false,
+            "DeactivateAfterSecondsAmount": 10.0,
+            "FadeSecondsAmount": 0.5,
+            "OnScreenHotkeyColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            }
+        },
+        {
+            "HotkeyID": "56e9326ba02548c7ac9b78ed886fc8a7",
+            "Name": "",
+            "Action": "RemoveAllExpressions",
+            "File": "",
+            "Folder": "",
+            "AutoCreated": false,
+            "Position": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0,
+                "Rotation": 0.0
+            },
+            "ColorOverlay": {
+                "On": false,
+                "IsStaticColor": false,
+                "Display": -1,
+                "WindowName": "",
+                "IncludeLeft": false,
+                "IncludeMid": false,
+                "IncludeRight": false,
+                "BaseValue": 0,
+                "OverlayValue": 0,
+                "Smoothing": 0,
+                "IncludeItems": false,
+                "StaticColor": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                }
+            },
+            "ColorScreenMultiplyPreset": {
+                "ArtMeshMultiplyAndScreenColors": []
+            },
+            "HandGestureSettings": {
+                "GestureLeft": "",
+                "GestureRight": "",
+                "GestureCombinator": "AND",
+                "AllowMirroredGesture": false,
+                "DeactivateExpWhenGestureNotDetected": false,
+                "SecondsUntilDetection": 0.5,
+                "SecondsDetected": 0.0,
+                "PercentDetected": 0.0
+            },
+            "LoadModelSettings": {
+                "LoadAtCurrentPosition": true
+            },
+            "TwitchTriggers": {
+                "Active": false,
+                "CooldownActive": false,
+                "CooldownSeconds": 30.0,
+                "ResetActive": false,
+                "HideModelResetDialog": false,
+                "Active_GiftSubTrigger": false,
+                "Active_BitTrigger": false,
+                "Active_RedeemTrigger": false,
+                "Active_PowerUpTrigger": false,
+                "Active_TextCommandTrigger": false,
+                "Active_SubTrigger": false,
+                "Active_FollowTrigger": false,
+                "Active_RaidTrigger": false,
+                "Active_ShoutoutTrigger": false,
+                "Active_AdbreakTrigger": false,
+                "Trigger_TextCommandTrigger": "",
+                "Trigger_Redeem_Name": "",
+                "Trigger_Redeem_ID": "",
+                "Trigger_PowerUp_Name": "",
+                "Trigger_PowerUp_ID": "",
+                "UseTextTriggerUserTypeRestriction": false,
+                "RestrictTextTriggerTo": {
+                    "Allowed_You": true,
+                    "Allowed_Subs": false,
+                    "Allowed_Mods": false,
+                    "Allowed_VIPs": false,
+                    "Allowed_Artists": false,
+                    "Allowed_UserNames": false,
+                    "UserNames": [],
+                    "Allowed_UserIDs": false,
+                    "UserIDs": []
+                },
+                "AllowRepeatedFollow": false,
+                "Trigger_GiftSubTrigger": {
+                    "Min": 1.0,
+                    "Max": 100.0
+                },
+                "Trigger_BitTrigger": {
+                    "Min": 100.0,
+                    "Max": 3000.0
+                }
+            },
+            "Triggers": {
+                "Trigger1": "Down",
+                "Trigger2": "",
+                "Trigger3": "",
+                "ScreenButton": -1
+            },
+            "SoundConfig": {
+                "SoundActive": false,
+                "StopWhenInactive": false,
+                "StopFadeOutSeconds": 2.0,
+                "SoundSlots": []
+            },
+            "IsGlobal": true,
+            "IsActive": true,
+            "Minimized": false,
+            "StopsOnLastFrame": false,
+            "DeactivateAfterKeyUp": false,
+            "OnlyLoadOneRandomItem": false,
+            "DeactivateAfterSeconds": false,
+            "DeactivateAfterSecondsAmount": 10.0,
+            "FadeSecondsAmount": 0.5,
+            "OnScreenHotkeyColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            }
+        },
+        {
+            "HotkeyID": "6f4079e8e9614164be6d8286ec64500d",
+            "Name": "BlueScarf",
+            "Action": "ToggleExpression",
+            "File": "BlueScarf.exp3.json",
+            "Folder": "",
+            "AutoCreated": false,
+            "Position": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0,
+                "Rotation": 0.0
+            },
+            "ColorOverlay": {
+                "On": false,
+                "IsStaticColor": false,
+                "Display": -1,
+                "WindowName": "",
+                "IncludeLeft": false,
+                "IncludeMid": false,
+                "IncludeRight": false,
+                "BaseValue": 0,
+                "OverlayValue": 0,
+                "Smoothing": 0,
+                "IncludeItems": false,
+                "StaticColor": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                }
+            },
+            "ColorScreenMultiplyPreset": {
+                "ArtMeshMultiplyAndScreenColors": []
+            },
+            "HandGestureSettings": {
+                "GestureLeft": "",
+                "GestureRight": "",
+                "GestureCombinator": "AND",
+                "AllowMirroredGesture": false,
+                "DeactivateExpWhenGestureNotDetected": false,
+                "SecondsUntilDetection": 0.5,
+                "SecondsDetected": 0.0,
+                "PercentDetected": 0.0
+            },
+            "LoadModelSettings": {
+                "LoadAtCurrentPosition": true
+            },
+            "TwitchTriggers": {
+                "Active": false,
+                "CooldownActive": false,
+                "CooldownSeconds": 30.0,
+                "ResetActive": false,
+                "HideModelResetDialog": false,
+                "Active_GiftSubTrigger": false,
+                "Active_BitTrigger": false,
+                "Active_RedeemTrigger": false,
+                "Active_PowerUpTrigger": false,
+                "Active_TextCommandTrigger": false,
+                "Active_SubTrigger": false,
+                "Active_FollowTrigger": false,
+                "Active_RaidTrigger": false,
+                "Active_ShoutoutTrigger": false,
+                "Active_AdbreakTrigger": false,
+                "Trigger_TextCommandTrigger": "",
+                "Trigger_Redeem_Name": "",
+                "Trigger_Redeem_ID": "",
+                "Trigger_PowerUp_Name": "",
+                "Trigger_PowerUp_ID": "",
+                "UseTextTriggerUserTypeRestriction": false,
+                "RestrictTextTriggerTo": {
+                    "Allowed_You": true,
+                    "Allowed_Subs": false,
+                    "Allowed_Mods": false,
+                    "Allowed_VIPs": false,
+                    "Allowed_Artists": false,
+                    "Allowed_UserNames": false,
+                    "UserNames": [],
+                    "Allowed_UserIDs": false,
+                    "UserIDs": []
+                },
+                "AllowRepeatedFollow": false,
+                "Trigger_GiftSubTrigger": {
+                    "Min": 1.0,
+                    "Max": 100.0
+                },
+                "Trigger_BitTrigger": {
+                    "Min": 100.0,
+                    "Max": 3000.0
+                }
+            },
+            "Triggers": {
+                "Trigger1": "",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1
