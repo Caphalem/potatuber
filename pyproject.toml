@@ -2,12 +2,13 @@
 name = "potatuber"
 version = "0.1.0"
 description = "A tiny, fully local AI VTuber you can actually understand. 🥔"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "MIT"
 dependencies = [
     "fastapi",
     "uvicorn[standard]",
     "pydantic",
+    "torch",   # pocket-tts needs it anyway - listed here so the CPU-only source below actually applies (sources only cover direct deps)
     "pocket-tts",
     "pywhispercpp",
     "sounddevice",
@@ -25,3 +26,15 @@ potatuber = "potatuber.__main__:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+# On Linux the default PyPI torch is the full CUDA build — several gigabytes
+# of GPU code the potato never uses. Windows and macOS get CPU-only by default.
+torch = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
