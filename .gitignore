@@ -19,8 +19,10 @@ vts_token.json
 # The cached, Live2D related JS libraries.
 frontend/vendor/
 
-# Cached voice states — regenerated automatically from the voice sample
-voices/*.safetensors
+# Voice samples are personal (and the caches next to them are generated).
+# Only Pota-chan's own sample ships.
+voices/*
+!voices/default.wav
 
 # pywebview local storage files
 .pywebview_storage/
