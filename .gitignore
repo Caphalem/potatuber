@@ -19,6 +19,10 @@ vts_token.json
 # The cached, Live2D related JS libraries.
 frontend/vendor/
 
+# Ignore all Live2D models that aren't Pota-chan.
+frontend/models/*
+!frontend/models/Pota-chan/
+
 # Voice samples are personal (and the caches next to them are generated).
 # Only Pota-chan's own sample ships.
 voices/*
