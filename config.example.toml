@@ -82,10 +82,10 @@ mouth_params = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
 # lower it if her mouth looks stuck open, raise it if quiet words barely move it.
 mouth_gain = 6
 # Optional: a motion file to use as her idle animation instead of the
-# model's built-in one. The path is relative to the model folder, just like
+# Live2D's built-in one. The path is relative to the model folder, just like
 # the paths inside the .model3.json — e.g. "motions/sway.motion3.json".
 # Leave empty to keep the model's default idle.
-idle_motion = ""
+idle_motion = "animations/Idle.motion3.json"
 # Expressions that are OUTFITS, not emotions: they stay on until switched
 # off, and making a face doesn't remove them. Names must match entries in
 # the model's Expressions list. Everything not listed here is an emotion.
@@ -121,7 +121,7 @@ enabled = false
 max_width = 800
 
 [mascot]
-width = 400
+width = 550
 height = 650
 x = 1136   # logical pixels! At 125% scale a 1920x1080 screen is 1536x864.
 y = 214

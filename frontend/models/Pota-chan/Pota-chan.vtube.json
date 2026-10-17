@@ -5,16 +5,16 @@
     "FileReferences": {
         "Icon": "icon.png",
         "Model": "Pota-chan.model3.json",
-        "IdleAnimation": "",
-        "IdleAnimationWhenTrackingLost": ""
+        "IdleAnimation": "Idle.motion3.json",
+        "IdleAnimationWhenTrackingLost": "Idle.motion3.json"
     },
     "ModelSaveMetadata": {
         "LastSavedVTubeStudioVersion": "1.35.10",
         "LastSavedPlatform": "Steam",
-        "LastSavedDateUTC": "Sunday, 11 October 2026, 18:35:16",
-        "LastSavedDateLocalTime": "Sunday, 11 October 2026, 21:35:16",
-        "LastSavedDateUnixMillisecondTimestamp": "1791743716038",
-        "TotalSaveCount": 280
+        "LastSavedDateUTC": "Saturday, 17 October 2026, 17:34:07",
+        "LastSavedDateLocalTime": "Saturday, 17 October 2026, 20:34:07",
+        "LastSavedDateUnixMillisecondTimestamp": "1792258447273",
+        "TotalSaveCount": 288
     },
     "SavedModelPosition": {
         "Position": {
@@ -233,7 +233,7 @@
         {
             "Folder": "",
             "Name": "Mouth Smile",
-            "Input": "PotaTuberMouthForm",
+            "Input": "MouthSmile",
             "InputRangeLower": 0.0,
             "InputRangeUpper": 1.0,
             "OutputRangeLower": -1.0,
@@ -249,7 +249,7 @@
         {
             "Folder": "",
             "Name": "Mouth Open",
-            "Input": "PotaTuberMouth",
+            "Input": "MouthOpen",
             "InputRangeLower": 0.0,
             "InputRangeUpper": 1.0,
             "OutputRangeLower": 0.0,
