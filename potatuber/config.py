@@ -45,7 +45,7 @@ class FaceConfig(BaseModel):
 
 class EarsConfig(BaseModel):
     whisper_model: str = "base.en"
-    hotkey: str = "ctrl_r"
+    hotkey: str = "shift_r"
     prompt: str = "Pota-chan, PotaTuber, Live2D"
 
 

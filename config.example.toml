@@ -106,8 +106,11 @@ mouth_form_range = [1750, 2800]
 whisper_model = "base.en"
 # Which key to hold while talking. Uses pynput key names — see the list at:
 # https://pynput.readthedocs.io/en/latest/keyboard.html#pynput.keyboard.Key
-# Special keys like "tab" or "ctrl_r" work, and so do plain letters like "z".
-hotkey = "ctrl_r"  # hold to talk, release to send
+# Right shift is the default because every keyboard has one (MacBooks have
+# no right ctrl, and right alt is AltGr on many Windows layouts). Short taps
+# are ignored, so typing a capital letter won't make her listen. Good
+# alternatives: "ctrl_r" on full-size keyboards ("alt_r" on MacBooks), or any letter like "z".
+hotkey = "shift_r"
 # Words Whisper should expect to hear — great for names it would otherwise
 # mangle. A comma-separated list of names works well, or a natural sentence
 # if you want to nudge her toward a certain style of transcription.
