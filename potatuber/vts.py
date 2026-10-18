@@ -131,7 +131,10 @@ class VTS:
                 values.append({"id": self.form_param, "value": self.form})
             try:
                 await self.request("InjectParameterDataRequest", {
-                    "faceFound": True,
+                    # False: we're injecting a couple of parameters, not tracking
+                    # a face. Claiming "face found" makes VTS let tracking override
+                    # her idle animation — she'd freeze into her default pose.
+                    "faceFound": False,
                     "mode": "set",
                     "parameterValues": values,
                 })

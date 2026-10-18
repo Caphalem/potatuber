@@ -137,21 +137,35 @@ toggle_hotkey = "<ctrl>+<alt>+p"
 # The subtitle page still works in this mode (e.g. as an OBS browser source).
 enabled = false
 port = 8001               # VTube Studio's API port — shown in its settings
-# "model": she IS the loaded VTS model (you're not in the scene).
+
+# PotaTuber creates two custom tracking inputs in VTS on every connection:
+#   PotaTuberMouth      (0 = closed, 1 = open)   — her voice volume
+#   PotaTuberMouthForm  (0 = round,  1 = wide)   — her vowel shape
+# Map a model's ParamMouthOpenY / ParamMouthForm to these whenever you want
+# ONLY that part of a model driven by her — nothing else in VTS listens to them.
+
+# "model": she IS the loaded VTS model (you're not in the scene). Uses the
+#          standard inputs below, so most models need no setup at all.
 # "item":  she's a Live2D item pinned to YOUR model — the companion on your
-#          shoulder. Load her as a regular model first, map her mouth to the
-#          "PotaTuberMouth" input, then "Load current model as Live2D Item".
+#          shoulder. Run PotaTuber once in this mode so the custom inputs
+#          exist, then load her as a regular model, map her mouth to
+#          PotaTuberMouth and PotaTuberMouthForm (so your own lip sync stays
+#          yours), then "Load current model as Live2D Item". Also turn off
+#          "Use normal hotkey triggers" on the item, or typing will trigger
+#          her faces.
 mode = "model"
 item_name = "Pota-chan"    # her folder name in VTS's Items folder
-mouth_param = "MouthOpen"  # the VTS tracking parameter driven by her voice. Only used in "model" mode.
+
+# "model" mode only — item mode always uses the PotaTuber inputs above.
+# Tip: a model with a BUILT-IN mascot can set these to the PotaTuber inputs
+# and map just the mascot's mouth to them, leaving your own face alone.
+mouth_param = "MouthOpen"         # driven by her voice volume
+mouth_form_param = "MouthSmile"   # driven by her vowel shape. Empty string turns it off.
 mouth_gain = 3  # how much her voice opens her mouth. Lower if it looks stuck open.
-# VTS input parameter for vowel shapes (0 = round, 1 = wide). Map your
-# model's ParamMouthForm to it. Empty string turns it off. Uses the same
-# [face] mouth_form_range, since brightness is about her VOICE, not her body.
-mouth_form_param = "MouthSmile"
+
 # Only these expressions are HERS. Empty = all of them, which is right when
 # she's the whole model. For models with a built-in mascot, list just the
-# mascot's expressions so she never touches your face.
+# mascot's expressions (toggles included) so she never touches your face.
 expressions = []
 
 [subtitles]
