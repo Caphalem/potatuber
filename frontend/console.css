@@ -72,6 +72,14 @@ h3 { margin: 0 0 10px; }
 
 #eyes input { accent-color: #7c5cbf; }
 
+/* ── Tools details ────────────────────────────────────────────────── */
+
+#tools { margin-bottom: 10px; font-size: 13px; color: #999; }
+#tools summary { cursor: pointer; user-select: none; }
+#tools ul { margin: 6px 0 0; padding-left: 1.2em; }
+#tools li { margin-bottom: 4px; }
+#tools b { color: #ccc; font-family: monospace; }
+
 /* ── Conversation log ─────────────────────────────────────────────── */
 
 #log {
@@ -88,6 +96,13 @@ h3 { margin: 0 0 10px; }
 
 .you { color: #8ec07c; }
 .her { color: #eee; }
+.tool {
+  color: #888;
+  font-family: monospace;
+  font-size: 12px;
+  padding-left: 1em;
+  border-left: 2px solid #444;
+}
 
 /* ── Input bar ────────────────────────────────────────────────────── */
 

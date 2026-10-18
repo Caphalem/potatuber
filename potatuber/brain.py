@@ -13,6 +13,8 @@ import json
 
 from openai import NOT_GIVEN, OpenAI
 
+from potatuber.events import ToolUse
+
 SENTENCE_ENDINGS = ".!?…"
 
 
@@ -141,9 +143,11 @@ class Brain:
                     try:
                         args = json.loads(c["arguments"] or "{}")
                     except json.JSONDecodeError:
+                        args = c["arguments"]
                         result, events = "Error: your arguments weren't valid JSON.", []
                     else:
                         result, events = self.hands.run(c["name"], args)
+                    yield ("event", ToolUse(name=c["name"], args=args, result=result))
                     for event in events:
                         yield ("event", event)
                     self.messages.append({

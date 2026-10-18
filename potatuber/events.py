@@ -70,10 +70,37 @@ class EyesState(BaseModel):
 
 
 class History(BaseModel):
-    """The conversation so far, sent to a page when it connects. Only what was
-    actually said — no system prompt, no tool plumbing."""
+    """The conversation so far, sent to a page when it connects.
+
+    Rebuilt from the brain's actual memory, so it's exactly what she
+    remembers — no system prompt, and nothing she's already forgotten.
+    Three kinds of entries, in the order they happened:
+
+        {"role": "user",      "text": str}
+        {"role": "assistant", "text": str}
+        {"role": "tool",      "name": str, "args": dict | str, "result": str}
+
+    The tool entry's args are a str only when her JSON was broken — shown raw.
+    """
     type: Literal["history"] = "history"
-    messages: list[dict]  # [{"role": "user" | "assistant", "text": str}]
+    messages: list[dict]
+
+
+class ToolUse(BaseModel):
+    """She used one of her hands. Shown in the console so you can see what
+    your potato is actually doing — the call, its arguments, and the result
+    she was told."""
+    type: Literal["tool_use"] = "tool_use"
+    name: str
+    args: dict | str   # str when her JSON was broken — shown raw
+    result: str
+
+
+class Tools(BaseModel):
+    """What hands she currently has. Sent on connect and whenever they
+    change — so you never have to argue with her about whether a tool exists."""
+    type: Literal["tools"] = "tools"
+    tools: list[dict]  # [{"name": str, "description": str}]
 
 
 # ── Browser → Server ──────────────────────────────────────────

@@ -9,6 +9,7 @@ the ears, which live here in Python-land).
 import asyncio
 import base64
 from contextlib import asynccontextmanager
+import json
 from pathlib import Path
 import threading
 import time
@@ -22,7 +23,7 @@ from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, YouSaid
+from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, Tools, YouSaid
 from potatuber.vts import VTS
 from potatuber.eyes import Eyes
 from potatuber.hands import make_default_hands
@@ -86,12 +87,40 @@ def eyes_state() -> EyesState:
 def history() -> History:
     """What she remembers — which, thanks to max_history, is also exactly
     what the console should show. Older exchanges she's forgotten don't
-    appear, and that's the truth about her memory."""
+    appear, and that's the truth about her memory.
+
+    Tool uses are rebuilt too: each assistant message's tool_calls get
+    paired with their results by tool_call_id, in the order they happened."""
+    results = {m["tool_call_id"]: m["content"]
+               for m in brain.messages if m["role"] == "tool"}
     entries = []
     for m in brain.messages[1:]:  # skip the system prompt
-        if m["role"] in ("user", "assistant") and m.get("content"):
-            entries.append({"role": m["role"], "text": m["content"]})
+        if m["role"] == "user":
+            entries.append({"role": "user", "text": m["content"]})
+        elif m["role"] == "assistant":
+            if m.get("content"):
+                entries.append({"role": "assistant", "text": m["content"]})
+            for call in m.get("tool_calls", []):
+                fn = call["function"]
+                try:
+                    args = json.loads(fn["arguments"] or "{}")
+                except json.JSONDecodeError:
+                    args = fn["arguments"]  # broken JSON — show it raw
+                entries.append({
+                    "role": "tool",
+                    "name": fn["name"],
+                    "args": args,
+                    "result": results.get(call["id"], ""),
+                })
     return History(messages=entries)
+
+
+def tools_state() -> Tools:
+    schemas = brain.hands.schemas if brain.hands else []
+    return Tools(tools=[
+        {"name": s["function"]["name"], "description": s["function"]["description"]}
+        for s in schemas
+    ])
 
 
 def scan_expressions(model_path: str) -> list[dict]:
@@ -111,7 +140,7 @@ def scan_expressions(model_path: str) -> list[dict]:
     ]
 
 
-def learn_expressions(expressions: list[str]) -> None:
+async def learn_expressions(expressions: list[str]) -> None:
     """Give her tools for whatever body she's wearing: faces AND outfits."""
     toggles = [e for e in expressions if e in config.face.toggles]
     emotions = [e for e in expressions if e not in config.face.toggles]
@@ -125,6 +154,8 @@ def learn_expressions(expressions: list[str]) -> None:
         note += (f" You also have outfit pieces: {', '.join(toggles)}. Use set_toggle "
                  f"to put them on or take them off — they stay until you change them.")
     brain.add_instructions(note)
+
+    await broadcast(tools_state())
 
     print(f"🥔 Learned faces: {', '.join(emotions)}"
           + (f" | outfits: {', '.join(toggles)}" if toggles else ""))
@@ -235,7 +266,7 @@ async def lifespan(app: FastAPI):
         try:
             print("   Connecting to VTube Studio...")
             await vts.connect()
-            learn_expressions(await vts.expressions())
+            await learn_expressions(await vts.expressions())
             print("   ...connected!")
         except OSError:
             raise RuntimeError("Can't reach VTube Studio — is it running with the API enabled?")
@@ -298,11 +329,12 @@ async def websocket_endpoint(ws: WebSocket) -> None:
     clients.add(ws)
     await ws.send_text(eyes_state().model_dump_json())
     await ws.send_text(history().model_dump_json())
+    await ws.send_text(tools_state().model_dump_json())
     try:
         while True:
             data = await ws.receive_json()
             if data.get("type") == "model_info":
-                learn_expressions(data.get("expressions", []))
+                await learn_expressions(data.get("expressions", []))
             elif data.get("type") == "user_says":
                 text = data["text"].strip()
                 if text:

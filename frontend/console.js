@@ -18,6 +18,12 @@ function append(cls, text) {
   return p;
 }
 
+function appendTool(name, args, result) {
+  const shown = typeof args === "string" ? args : JSON.stringify(args);
+  append("tool", `⚙ ${name}(${shown}) → ${result}`);
+  botLine = null;  // her next sentence starts a new line, below the tool
+}
+
 function sleep(ms) {
   return new Promise((resolve) => {
     const timer = setTimeout(resolve, ms);
@@ -59,6 +65,7 @@ function connect() {
       botLine = null;
       for (const m of event.messages) {
         if (m.role === "user") append("you", "You: " + m.text);
+        else if (m.role === "tool") appendTool(m.name, m.args, m.result);
         else append("her", herName + ": " + m.text);
       }
     }
@@ -83,6 +90,24 @@ function connect() {
     if (event.type === "eyes_state") {
       document.getElementById("eyes").style.display = event.available ? "flex" : "none";
       document.getElementById("eyes-toggle").checked = event.enabled;
+    }
+
+    if (event.type === "tool_use") {
+      const args = typeof event.args === "string" ? event.args : JSON.stringify(event.args);
+      append("tool", `⚙ ${event.name}(${args}) → ${event.result}`);
+      botLine = null;  // her next sentence starts a new line, below the tool
+    }
+
+    if (event.type === "tools") {
+      const box = document.getElementById("tools");
+      const n = event.tools.length;
+      box.querySelector("summary").textContent =
+        n ? `🖐 ${n} tool${n === 1 ? "" : "s"}` : "🖐 No hands yet";
+      box.querySelector("ul").replaceChildren(...event.tools.map((t) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<b>${t.name}</b> — ${t.description}`;
+        return li;
+      }));
     }
   };
 
