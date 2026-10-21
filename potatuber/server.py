@@ -1,4 +1,4 @@
-"""The potato's nervous system: connects the Python organs to her faces.
+"""The potato's nervous system: connects the Python parts to her faces.
 
 Plural faces! Any number of pages can connect to the WebSocket at once:
 the mascot window, the console, a subtitle overlay... Every event is
@@ -23,7 +23,7 @@ from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, Tools, YouSaid
+from potatuber.events import AudioChunk, EyesState, History, NowSaying, Seen, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, Tools, YouSaid
 from potatuber.vts import VTS
 from potatuber.eyes import Eyes
 from potatuber.hands import Hands, register_custom_tools, register_default_tools
@@ -70,7 +70,7 @@ vts = (
     if config.vts.enabled else None
 )
 
-print("🥔 All organs ready!")
+print("🥔 All parts ready!")
 
 clients: set[WebSocket] = set()
 
@@ -259,7 +259,10 @@ async def handle_user_text(text: str) -> None:
     """The one entrance for ALL input — ears, console, whatever comes later."""
     async with conversation_lock:
         await broadcast(YouSaid(text=text))
-        image = await asyncio.to_thread(eyes.look) if eyes and eyes_on["value"] else None
+        image = None
+        if eyes and eyes_on["value"]:
+            image = await asyncio.to_thread(eyes.look)
+            await broadcast(Seen(image=image))  # show the console what she saw
         await respond(text, image)
 
 

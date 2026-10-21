@@ -18,7 +18,7 @@ from potatuber.config import load
 def wait_for_server(host: str, port: int, timeout: float = 120.0) -> None:
     """Don't open the windows until the server is actually answering.
 
-    The organs (and possibly a few model downloads) load first, so this can
+    The parts (and possibly a few model downloads) load first, so this can
     take a while on the very first run.
     """
     deadline = time.time() + timeout

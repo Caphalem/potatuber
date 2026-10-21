@@ -1,6 +1,6 @@
 """Loads and validates config.toml — the file where the potato is customized.
 
-Every organ asks this module for its settings instead of hardcoding them.
+Every part asks this module for its settings instead of hardcoding them.
 If something in config.toml is wrong, pydantic tells you exactly what
 and where, instead of crashing mysteriously later.
 """

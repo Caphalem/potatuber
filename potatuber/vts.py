@@ -77,7 +77,7 @@ class VTS:
     async def connect(self) -> None:
         # 127.0.0.1 rather than localhost: VTS listens on IPv4, and Windows
         # likes to try ::1 first. Takes the resolver out of the equation.
-        # Retries because VTS can be slow to answer right after our organs
+        # Retries because VTS can be slow to answer right after our parts
         # finish loading and the CPU is still catching its breath.
         last_error = None
         for attempt in range(5):
@@ -224,7 +224,7 @@ class VTS:
                     and self._mine(e["name"])):
                 await self.request("ExpressionActivationRequest",
                                    {"expressionFile": e["file"], "active": False})
-        if name != "neutral" and name in files and self._mine(name):
+        if name != "Neutral" and name in files and self._mine(name):
             await self.request("ExpressionActivationRequest",
                                {"expressionFile": files[name], "active": True})
 
@@ -292,7 +292,7 @@ class VTS:
             await trigger(self._hotkeys[self._active])  # toggle the old face off
         self._active = None
 
-        if name != "neutral" and name in self._hotkeys and name not in self.toggles:
+        if name != "Neutral" and name in self._hotkeys and name not in self.toggles:
             await trigger(self._hotkeys[name])
             self._active = name
 

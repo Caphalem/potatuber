@@ -69,6 +69,14 @@ class EyesState(BaseModel):
     enabled: bool    # ...and switched on right now?
 
 
+class Seen(BaseModel):
+    """The screenshot she was just sent, so you can check what she actually saw.
+    Broadcast once per message while vision is on. Never stored anywhere — the
+    same ephemeral rule as the image itself."""
+    type: Literal["seen"] = "seen"
+    image: str  # base64 JPEG, exactly the bytes her brain received
+
+
 class History(BaseModel):
     """The conversation so far, sent to a page when it connects.
 

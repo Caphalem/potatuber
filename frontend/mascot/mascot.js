@@ -182,7 +182,7 @@ async function wakeUp() {
 
   ws.onopen = () => {
     // This page loads the model, so it's the one who reports her wardrobe.
-    // (The server adds "neutral" itself — it works for any body she wears.)
+    // (The server adds "Neutral" itself — it works for any body she wears.)
     const expressions =
       (model.internalModel.settings.expressions ?? []).map((e) => e.Name);
     ws.send(JSON.stringify({ type: "model_info", expressions }));
@@ -247,7 +247,7 @@ async function wakeUp() {
     }
 
     if (event.type === "set_expression") {
-      if (event.name === "neutral") {
+      if (event.name.toLowerCase() === "neutral") {
         // Not a file — this clears whatever expression is applied and
         // returns her to the model's default parameters.
         model.internalModel.motionManager.expressionManager?.resetExpression();

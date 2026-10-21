@@ -80,6 +80,20 @@ h3 { margin: 0 0 10px; }
 #tools li { margin-bottom: 4px; }
 #tools b { color: #ccc; font-family: monospace; }
 
+
+/* ── Seen details ─────────────────────────────────────────────────── */
+
+#seen { margin-bottom: 10px; font-size: 13px; color: #999; }
+#seen summary { cursor: pointer; user-select: none; }
+#seen .hint { margin: 6px 0 0; }
+#seen img {
+  display: none;
+  max-width: 100%;
+  margin-top: 6px;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
 /* ── Conversation log ─────────────────────────────────────────────── */
 
 #log {

@@ -90,6 +90,17 @@ function connect() {
     if (event.type === "eyes_state") {
       document.getElementById("eyes").style.display = event.available ? "flex" : "none";
       document.getElementById("eyes-toggle").checked = event.enabled;
+      document.getElementById("seen").style.display = event.enabled ? "block" : "none";
+    }
+
+    if (event.type === "seen") {
+      const box = document.getElementById("seen");
+      const img = box.querySelector("img");
+      img.src = "data:image/jpeg;base64," + event.image;
+      img.style.display = "block";
+      box.querySelector(".hint").style.display = "none";
+      box.querySelector("summary").textContent =
+        "What she saw (" + new Date().toLocaleTimeString() + ")";
     }
 
     if (event.type === "tool_use") {
