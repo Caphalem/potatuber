@@ -14,8 +14,11 @@ tab, or inside VTube Studio. No cloud, no subscriptions, no GPU required.
 
 She's also built to be *understood*. The whole thing is a handful of short Python
 files, one per part — `ears.py`, `brain.py`, `voice.py`, `hands.py`, `eyes.py` — and
-you can read all of them in an evening. If you've ever wondered how AI VTubers
-actually work, this is the project that shows you, with a potato in it.
+you can read all of them in an evening. The two bigger ones, `server.py` (the
+nervous system that connects everything) and `vts.py` (her VTube Studio body),
+are longer only because they have more to wire up, not because anything in
+them is clever. If you've ever wondered how AI VTubers actually work, this is
+the project that shows you, with a potato in it.
 
 **What's in the box**
 
