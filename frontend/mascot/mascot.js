@@ -13,8 +13,11 @@ async function wakeUp() {
   // ── Audio: one analyser sits between all speech and the speakers ──
   const audioCtx = new AudioContext();
   const analyser = audioCtx.createAnalyser();
+  const gain = audioCtx.createGain();
   analyser.fftSize = 1024;
-  analyser.connect(audioCtx.destination);
+  gain.gain.value = full.voice.volume;
+  analyser.connect(gain);
+  gain.connect(audioCtx.destination);
   let playhead = 0;
 
   // ── Mouth form: a crude vowel shape from spectral brightness ──

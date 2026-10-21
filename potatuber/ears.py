@@ -40,10 +40,11 @@ def _parse_key(name: str):
 
 
 class Ears:
-    def __init__(self, whisper_model: str, hotkey: str, prompt: str = ""):
+    def __init__(self, whisper_model: str, hotkey: str, prompt: str = "", input_device: str = ""):
         self.model = WhisperModel(whisper_model, device="cpu", compute_type="int8")
         self.prompt = prompt
         self.hotkey = hotkey
+        self.input_device = input_device
         self._key = _parse_key(hotkey)
         self._held = threading.Event()
         self.on_hold = None  # optional: called with True on press, False on release
@@ -92,7 +93,9 @@ class Ears:
             recorded.append(indata.copy())
 
         with sd.InputStream(
-            samplerate=SAMPLE_RATE, channels=1, dtype="float32", callback=callback
+            samplerate=SAMPLE_RATE, channels=1, dtype="float32",
+            device=self.input_device or None,  # None = system default
+            callback=callback,
         ):
             while self._held.is_set():
                 sd.sleep(50)

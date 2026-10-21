@@ -7,17 +7,21 @@ The screenshot is EPHEMERAL: sent with one request, never saved to history, just
 import base64
 import io
 
-from PIL import ImageGrab
+from PIL import Image
+import mss
 
 
 class Eyes:
-    def __init__(self, max_width: int = 1280, quality: int = 70):
+    def __init__(self, max_width: int = 1280, quality: int = 70, monitor: int = 1):
         self.max_width = max_width
         self.quality = quality
+        self.monitor = monitor
 
     def look(self) -> str:
-        """Grab the primary display. Returns a base64 JPEG."""
-        image = ImageGrab.grab().convert("RGB")
+        with mss.mss() as sct:
+            index = min(self.monitor, len(sct.monitors) - 1)
+            shot = sct.grab(sct.monitors[index])
+            image = Image.frombytes("RGB", shot.size, shot.bgra, "raw", "BGRX")
         if image.width > self.max_width:
             ratio = self.max_width / image.width
             image = image.resize((self.max_width, int(image.height * ratio)))

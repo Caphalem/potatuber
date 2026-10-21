@@ -75,6 +75,10 @@ pitch_shift = 4.0
 # stream_audio = false or she'll stutter. Multilingual: french, german,
 # spanish, italian, portuguese, dutch (add "_24l" for the big versions like "dutch_24l").
 language = "english"
+# How loud she is, 1.0 = as generated. Her mouth is measured before this is
+# applied, so turning her down doesn't make her mumble visually. Your OS mixer
+# and OBS's source slider work too; this is just the convenient knob.
+volume = 1.0
 
 [face]
 model = "models/Pota-chan/Pota-chan.model3.json"
@@ -120,22 +124,53 @@ hotkey = "shift_r"
 # mangle. A comma-separated list of names works well, or a natural sentence
 # if you want to nudge her toward a certain style of transcription.
 prompt = "Pota-chan, PotaTuber, Live2D"
+# Which microphone to use. Empty = your system default. Otherwise part of the
+# device's name is enough (e.g. "Yeti"). To see what you have, run:
+#   uv run python -m sounddevice
+input_device = ""
 
 [eyes]
-# Send a screenshot of your primary display with every message. Needs a
+# Send a screenshot of your display with every message. Needs a
 # vision-capable model (Ministral 3 has it) — and on macOS, Screen
 # Recording permission. Off by default: it costs prompt processing time.
 enabled = false
 max_width = 800
+# 1 is your primary display, 2 your second, and so on; 0 captures all of
+# them side by side as one wide image.
+monitor = 1
 
 [mascot]
-width = 550
+# Her desktop window. All sizes and positions here are in LOGICAL pixels: what
+# your screen is at 100% scaling. At 125% scaling a 1920x1080 screen is
+# 1536x864 logical pixels, and a 500-wide window is 625 real pixels. If a
+# window seems to vanish, it's probably off the edge in logical terms; use
+# smaller numbers.
+width = 500
 height = 650
-x = 1136   # logical pixels! At 125% scale a 1920x1080 screen is 1536x864.
-y = 214
-# Uses pynput's hotkey format — see:
+# Where her window's top-left corner starts, measured from the top-left of
+# your primary display. The defaults park her bottom-right on a 1536x864
+# (logical) screen, just above the taskbar. Only used on first boot: once you
+# drag her, the position is saved to positions.json and that wins. Delete
+# that file to come back here.
+x = 1120
+y = 182
+# Switches every PotaTuber window between solid (clickable, draggable) and
+# ghost (see-through, click-through). Uses pynput's hotkey format — see:
 # https://pynput.readthedocs.io/en/latest/keyboard.html#global-hotkeys
 toggle_hotkey = "<ctrl>+<alt>+p"
+# Her size on screen isn't set here: scroll over her in solid mode to zoom,
+# and she remembers it. Make the window big enough to hold her at the size
+# you like — anything outside it gets clipped.
+
+[subtitles]
+# The subtitle window. Same logical-pixel rules and the same ghost/solid
+# hotkey as the mascot; position is remembered in positions.json after you
+# drag it. The defaults center it near the bottom of a 1536x864 (logical)
+# screen. Wide and short works best: one or two lines of text.
+width = 800
+height = 120
+x = 368
+y = 700
 
 [vts]
 # Use a model loaded in VTube Studio as her body instead of the desktop mascot.
@@ -170,17 +205,16 @@ item_name = "Pota-chan"    # her folder name in VTS's Items folder
 mouth_param = "MouthOpen"         # driven by her voice volume
 mouth_form_param = "MouthSmile"   # driven by her vowel shape. Empty string turns it off.
 mouth_gain = 3  # how much her voice opens her mouth. Lower if it looks stuck open.
+# Which speaker/output to play her voice through in VTube Studio mode, where
+# Python plays the audio. Empty = system default. Same name matching and
+# same lister as input_device. (In mascot and browser modes the browser plays
+# her, so use your OS's per-app audio settings instead.)
+output_device = ""
 
 # Only these expressions are HERS. Empty = all of them, which is right when
 # she's the whole model. For models with a built-in mascot, list just the
 # mascot's expressions (toggles included) so she never touches your face.
 expressions = []
-
-[subtitles]
-width = 800
-height = 120
-x = 368
-y = 700
 
 [server]
 host = "127.0.0.1"

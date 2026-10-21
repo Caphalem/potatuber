@@ -28,7 +28,7 @@ CUSTOM_FORM = "PotaTuberMouthForm"
 
 
 class VTS:
-    def __init__(self, cfg, toggles: list[str] = (), form_range: list[float] = (1750, 2800)):
+    def __init__(self, cfg, toggles: list[str] = (), form_range: list[float] = (1750, 2800), volume: float = 1.0):
         self.url = f"ws://localhost:{cfg.port}"
         self.mode = cfg.mode
         self.item_name = cfg.item_name
@@ -42,6 +42,8 @@ class VTS:
         self.form_range = form_range
         self.form_param = (CUSTOM_FORM if cfg.mode == "item" else cfg.mouth_form_param)
         self.form = 0.5
+        self.volume = volume
+        self.output_device = cfg.output_device
         # Only these expressions are hers. Empty = all of them.
         self.allowed = set(cfg.expressions)
         self._id = 0
@@ -297,10 +299,13 @@ class VTS:
             self._active = name
 
     def play(self, audio: np.ndarray, sample_rate: int) -> None:
-        """Play one sentence through the speakers, updating self.mouth as it
-        goes. Blocking — call via asyncio.to_thread."""
+        """Play one sentence through the set sound output device,
+        updating self.mouth as it goes. Blocking — call via asyncio.to_thread."""
         block = int(sample_rate * 0.03)
-        with sd.OutputStream(samplerate=sample_rate, channels=1, dtype="int16") as out:
+        with sd.OutputStream(
+            samplerate=sample_rate, channels=1, dtype="int16",
+            device=self.output_device or None,
+        ) as out:
             for i in range(0, len(audio), block):
                 chunk = audio[i:i + block]
                 floats = chunk.astype(np.float32) / 32768
@@ -320,6 +325,6 @@ class VTS:
                     lo, hi = self.form_range
                     t = (centroid - lo) / (hi - lo)
                     self.form += (float(min(1.0, max(0.0, t))) - self.form) * 0.25
-                out.write(chunk)
+                out.write(np.clip(chunk * self.volume, -32768, 32767).astype(np.int16))
         self.mouth = 0.0
         self.form = 0.5

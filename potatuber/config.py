@@ -30,6 +30,7 @@ class VoiceConfig(BaseModel):
     stream_audio: bool = False
     pitch_shift: float = 0.0
     language: str = "english"
+    volume: float = 1.0
 
 
 class FaceConfig(BaseModel):
@@ -48,11 +49,13 @@ class EarsConfig(BaseModel):
     whisper_model: str = "base.en"
     hotkey: str = "shift_r"
     prompt: str = "Pota-chan, PotaTuber, Live2D"
+    input_device: str = ""
 
 
 class EyesConfig(BaseModel):
     enabled: bool = False
     max_width: int = 1280
+    monitor: int = 1
 
 
 class MascotConfig(BaseModel):
@@ -72,6 +75,7 @@ class VtsConfig(BaseModel):
     mouth_gain: float = 6
     mouth_form_param: str = "MouthSmile"
     expressions: list[str] = ""
+    output_device: str = ""
 
 
 class SubtitlesConfig(BaseModel):

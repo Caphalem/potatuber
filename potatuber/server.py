@@ -56,17 +56,17 @@ brain = Brain(
 
 t = time.perf_counter()
 print("   Loading ears (Whisper)...")
-ears = Ears(config.ears.whisper_model, config.ears.hotkey, config.ears.prompt)
+ears = Ears(config.ears.whisper_model, config.ears.hotkey, config.ears.prompt, input_device=config.ears.input_device)
 print(f"   ...ears ready in {time.perf_counter() - t:.1f}s")
 
 if config.eyes.enabled:
-    eyes = Eyes(config.eyes.max_width)
+    eyes = Eyes(max_width=config.eyes.max_width, monitor=config.eyes.monitor)
     print("   Eyes ready")
 else:
     eyes = None
 
 vts = (
-    VTS(config.vts, toggles=config.face.toggles, form_range=config.face.mouth_form_range)
+    VTS(config.vts, toggles=config.face.toggles, form_range=config.face.mouth_form_range, volume=config.voice.volume)
     if config.vts.enabled else None
 )
 
@@ -352,6 +352,7 @@ async def get_config():
         "character": {"name": config.character.name},
         "face": config.face,
         "expressions": scan_expressions(config.face.model),
+        "voice": {"volume": config.voice.volume},
     }
 
 
