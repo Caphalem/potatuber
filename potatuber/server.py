@@ -23,7 +23,7 @@ from potatuber import vendor
 from potatuber.brain import Brain
 from potatuber.config import load
 from potatuber.ears import Ears
-from potatuber.events import AudioChunk, EyesState, History, NowSaying, Seen, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, Tools, YouSaid
+from potatuber.events import AudioChunk, EyesState, History, NowSaying, ResponseEnd, Seen, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, Tools, YouSaid
 from potatuber.vts import VTS
 from potatuber.eyes import Eyes
 from potatuber.hands import Hands, register_custom_tools, register_default_tools
@@ -73,6 +73,7 @@ vts = (
 print("🥔 All parts ready!")
 
 clients: set[WebSocket] = set()
+faces: set[WebSocket] = set()      # clients that loaded a model
 
 # One conversation at a time: if the ears and the console both submit,
 # the second one politely waits its turn instead of interleaving.
@@ -80,6 +81,8 @@ conversation_lock = asyncio.Lock()
 
 eyes_on = {"value": False}  # always boots OFF — vision is expensive
 current_state = {"value": "idle"}
+
+playback_done = asyncio.Event()
 
 def eyes_state() -> EyesState:
     return EyesState(available=eyes is not None, enabled=eyes_on["value"])
@@ -237,6 +240,17 @@ async def respond(user_text: str, image: str | None) -> None:
                     await set_state("speaking")
                     speaking = True
                 await speak(payload)
+
+        if not vts and faces and speaking:
+            # The face plays audio a beat after we send it. Wait until it
+            # reports the last sentence has actually finished, so "idle"
+            # means idle. Timeout in case the page vanished mid-reply.
+            playback_done.clear()
+            await broadcast(ResponseEnd())
+            try:
+                await asyncio.wait_for(playback_done.wait(), timeout=60)
+            except asyncio.TimeoutError:
+                pass
     except APIConnectionError:
         print("🥔 Can't reach the brain! Is LM Studio running, with the "
               f"server on, at {config.brain.base_url}?")
@@ -353,6 +367,7 @@ async def websocket_endpoint(ws: WebSocket) -> None:
             data = await ws.receive_json()
             if data.get("type") == "model_info":
                 await learn_expressions(data.get("expressions", []))
+                faces.add(ws)
             elif data.get("type") == "user_says":
                 text = data["text"].strip()
                 if text:
@@ -362,10 +377,13 @@ async def websocket_endpoint(ws: WebSocket) -> None:
             elif data.get("type") == "set_eyes" and eyes:
                 eyes_on["value"] = bool(data.get("enabled"))
                 await broadcast(eyes_state())
+            elif data.get("type") == "playback_done":
+                playback_done.set()
     except WebSocketDisconnect:
         pass
     finally:
         clients.discard(ws)
+        faces.discard(ws)
 
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

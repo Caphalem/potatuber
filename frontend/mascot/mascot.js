@@ -246,6 +246,11 @@ async function wakeUp() {
       }, delay);
     }
 
+    if (event.type === "response_end") {
+      const delay = Math.max(0, (playhead - audioCtx.currentTime) * 1000);
+      setTimeout(() => ws.send(JSON.stringify({ type: "playback_done" })), delay);
+    }
+
     if (event.type === "set_expression") {
       if (event.name.toLowerCase() === "neutral") {
         // Not a file — this clears whatever expression is applied and

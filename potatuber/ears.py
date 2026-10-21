@@ -19,6 +19,7 @@ from faster_whisper import WhisperModel
 from pynput import keyboard
 
 SAMPLE_RATE = 16000  # Whisper only speaks 16 kHz mono
+MIN_SPEECH = 0.3  # seconds — shorter than this is a tap, not speech
 
 
 def _normalize(text: str) -> str:
@@ -46,6 +47,8 @@ class Ears:
         self._key = _parse_key(hotkey)
         self._held = threading.Event()
         self.on_hold = None  # optional: called with True on press, False on release
+        self._timer = None
+        self._announced = False
 
         # One listener for the whole session. It runs in its own thread and
         # just flips a flag — listen() watches that flag.
@@ -57,17 +60,27 @@ class Ears:
 
     def _on_press(self, key):
         if key == self._key and not self._held.is_set():
-            # Windows repeats key-down events while a key is held — the
-            # is_set() check makes sure we only announce the FIRST press.
             self._held.set()
-            if self.on_hold:
-                self.on_hold(True)
+            # Announce "listening" only once the tap-grace period has passed —
+            # a quick tap records nothing, so the dot shouldn't flicker.
+            self._timer = threading.Timer(MIN_SPEECH, self._announce)
+            self._timer.daemon = True
+            self._timer.start()
+
+    def _announce(self):
+        if self._held.is_set() and self.on_hold:
+            self._announced = True
+            self.on_hold(True)
 
     def _on_release(self, key):
         if key == self._key:
             self._held.clear()
-            if self.on_hold:
-                self.on_hold(False)
+            if self._timer:
+                self._timer.cancel()
+            if self._announced:
+                self._announced = False
+                if self.on_hold:
+                    self.on_hold(False)
 
     def listen(self) -> str:
         """Block until the user holds the hotkey and speaks. Returns the text."""
@@ -85,7 +98,7 @@ class Ears:
                 sd.sleep(50)
 
         audio = np.concatenate(recorded)[:, 0] if recorded else np.zeros(0, np.float32)
-        if len(audio) < SAMPLE_RATE * 0.3:
+        if len(audio) < SAMPLE_RATE * MIN_SPEECH:
             return ""  # a tap, not speech — Whisper hallucinates on tiny clips
         segments, _ = self.model.transcribe(audio, initial_prompt=self.prompt or None)
         text = " ".join(s.text for s in segments).strip()
