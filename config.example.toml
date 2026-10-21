@@ -46,6 +46,11 @@ model = "local-model"                  # LM Studio ignores this and uses whateve
 # When exceeded, the oldest exchanges are forgotten first. ~24000 chars
 # is about 6000 tokens — comfortable for small models with 8k contexts.
 max_history = 24000
+# Sent to the brain as its API key. LM Studio only checks it if you've turned
+# on authentication in its server settings (off by default); if you have,
+# paste the token it gave you here. For a cloud API, this is your real key.
+# config.toml is ignored by git, so it stays on your machine.
+api_key = "potato"
 
 [voice]
 sample = "voices/default.wav"  # a clean recording of one person talking
