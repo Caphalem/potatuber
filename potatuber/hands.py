@@ -34,9 +34,14 @@ class Hands:
         return result, []
 
 
-def make_default_hands(expressions: list[str], toggles: list[str]) -> Hands:
-    """The potato's starter kit."""
-    hands = Hands()
+def register_default_tools(hands: Hands, expressions: list[str], toggles: list[str] = ()) -> None:
+    """Her built-in tools: a face and a wardrobe.
+
+    These are built at runtime from whatever the model actually has, which
+    is why they live in a function instead of a plain list — the enums come
+    from the scanned expressions. A good example of a tool that returns an
+    event for the browser alongside its text result.
+    """
 
     if expressions:  # no expressions in the model = she never gets this tool
         def set_expression(name: str):
@@ -93,4 +98,34 @@ def make_default_hands(expressions: list[str], toggles: list[str]) -> Hands:
             },
         })
 
-    return hands
+
+def register_custom_tools(hands: Hands) -> None:
+    """Your tools go here. Write a function, describe it, hands.register() it.
+
+    Anything you add is picked up on the next launch and shows up in the
+    console's tools dropdown. See the README's "How to give her new
+    abilities" for a worked example. Nothing in here can break the defaults.
+    """
+
+    # import random
+
+    # def roll_dice(sides: int = 6):
+    #     return f"You rolled a {random.randint(1, sides)} on a {sides}-sided die."
+
+    # hands.register(roll_dice, {
+    #     "type": "function",
+    #     "function": {
+    #         "name": "roll_dice",
+    #         "description": "Roll a die and see what comes up.",
+    #         "parameters": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "sides": {
+    #                     "type": "integer",
+    #                     "description": "How many sides the die has. Default 6.",
+    #                 }
+    #             },
+    #             "required": [], # Arguments she MUST provide. Empty here because "sides" has a default, so she can call roll_dice() with nothing at all — and small models often will.
+    #         },
+    #     },
+    # })

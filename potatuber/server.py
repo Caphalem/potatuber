@@ -17,7 +17,7 @@ import time
 import numpy as np
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
-from openai import APIConnectionError
+from openai import APIConnectionError, APIStatusError
 
 from potatuber import vendor
 from potatuber.brain import Brain
@@ -26,7 +26,7 @@ from potatuber.ears import Ears
 from potatuber.events import AudioChunk, EyesState, History, NowSaying, SetExpression, SetToggle, SpeakEnd, SpeakStart, State, Tools, YouSaid
 from potatuber.vts import VTS
 from potatuber.eyes import Eyes
-from potatuber.hands import make_default_hands
+from potatuber.hands import Hands, register_custom_tools, register_default_tools
 from potatuber.voice import Voice, make_speakable
 
 
@@ -34,7 +34,7 @@ EXP_SUFFIX = ".exp3.json"
 
 config = load()
 
-print(f"🥔 Waking up {config.character.name}...")
+print(f"🥔 Loading up {config.character.name}...")
 
 print("   Checking frontend libraries...")
 vendor.ensure()
@@ -50,7 +50,8 @@ brain = Brain(
     model=config.brain.model,
     system_prompt=config.character.system_prompt,
     max_history=config.brain.max_history,
-    reminder=config.character.reminder
+    reminder=config.character.reminder,
+    api_key=config.brain.api_key
 )
 
 t = time.perf_counter()
@@ -146,7 +147,11 @@ async def learn_expressions(expressions: list[str]) -> None:
     emotions = [e for e in expressions if e not in config.face.toggles]
     if "Neutral" not in emotions:
         emotions.append("Neutral")
-    brain.hands = make_default_hands(emotions, toggles)
+
+    hands = Hands()
+    register_default_tools(hands, emotions, toggles)
+    register_custom_tools(hands)
+    brain.hands = hands
 
     note = (f"You can change your look with the set_expression tool. "
             f"Your available faces: {', '.join(emotions)}. Use them to react!")
