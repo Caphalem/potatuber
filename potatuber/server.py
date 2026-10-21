@@ -236,6 +236,16 @@ async def respond(user_text: str, image: str | None) -> None:
         print("🥔 Can't reach the brain! Is LM Studio running, with the "
               f"server on, at {config.brain.base_url}?")
         await speak("I can't reach my brain right now...")
+    except APIStatusError as e:
+        # The server answered, but said no: bad API key (401), unknown model
+        # (404), rate limit (429)... The message usually says exactly why.
+        print(f"🥔 The brain refused ({e.status_code}): {e.message}")
+        if e.status_code == 401:
+            await speak("My brain says my API key is wrong...")
+        else:
+            await speak("My brain gave me an error...")
+    finally:
+        await set_state("idle")
 
     await set_state("idle")
 

@@ -21,6 +21,7 @@ class CharacterConfig(BaseModel):
 class BrainConfig(BaseModel):
     base_url: str
     model: str
+    api_key: str = "potato"
     max_history: int = 24000
 
 

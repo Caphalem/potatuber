@@ -19,9 +19,9 @@ SENTENCE_ENDINGS = ".!?…"
 
 
 class Brain:
-    def __init__(self, base_url, model, system_prompt, max_history, reminder="", hands=None):
-        # api_key is required by the client but ignored by local servers.
-        self.client = OpenAI(base_url=base_url, api_key="potato")
+    def __init__(self, base_url, model, system_prompt, api_key="potato",
+                 reminder="", max_history=24000, hands=None):
+        self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
         self.messages = [{"role": "system", "content": system_prompt}]
         self.hands = hands
