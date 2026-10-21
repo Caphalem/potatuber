@@ -125,15 +125,15 @@ your system, and press Enter:
 
 **Windows**
 
-"""powershell
+```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-"""
+```
 
 **macOS**
 
-"""sh
+```sh
 curl -LsSf https://astral.sh/uv/install.sh | sh
-"""
+```
 
 When it finishes, **close VS Code completely and open it again** so the
 terminal notices the new program. Then open a terminal and type `uv --version`.
@@ -141,15 +141,15 @@ If it prints a version number, you're good.
 
 **Windows**
 
-"""powershell
+```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-"""
+```
 
 **macOS**
 
-"""sh
+```sh
 curl -LsSf https://astral.sh/uv/install.sh | sh
-"""
+```
 
 When it finishes, **close VS Code completely and open it again** so it notices
 the new program. Then open a terminal and type `uv --version`. If it prints a
@@ -209,9 +209,9 @@ which is exactly where the commands need to run.
 
 Open a terminal in VS Code and run:
 
-"""sh
+```sh
 uv sync
-"""
+```
 
 This downloads Python and all the libraries she uses. It takes a few minutes
 the first time. If it ends without red text, it worked.
@@ -223,9 +223,9 @@ the first time. If it ends without red text, it worked.
 
 In the terminal, run:
 
-"""sh
+```sh
 uv run hf auth login
-"""
+```
 
 Choose the option to log in through your browser, approve it, and come back.
 You only have to do this once.
@@ -242,17 +242,17 @@ more. The defaults are already set up for Pota-chan, so leave it alone for now.
 
 Make sure LM Studio is open with the server on, then run:
 
-"""sh
+```sh
 uv run python -m potatuber.server
-"""
+```
 
 The first time, she downloads her voice and hearing models and a few files for
 her face. This takes a while, and the terminal tells you what's loading. When
 you see:
 
-"""
+```
 All parts ready!
-"""
+```
 
 click into the terminal and press **Ctrl+C** to stop her. (Click into the
 terminal first: with the editor focused, Ctrl+C just copies text.) Everything
@@ -267,9 +267,9 @@ is now saved on your computer, and from here on she works without internet.
 
 Run:
 
-"""sh
+```sh
 uv run python -m potatuber
-"""
+```
 
 After a moment Pota-chan appears in the bottom-right corner of your screen.
 
@@ -381,10 +381,10 @@ it loads in VTS, it loads here, same files, same folder.
    came. Subfolders like `expressions/` or `animations/` are fine.
 2. In `config.toml`, point `model` at the `.model3.json`:
 
-   """toml
+   ```toml
    [face]
    model = "models/MyModel/MyModel.model3.json"
-   """
+   ```
 
    The path is relative to the `frontend/` folder, which is the website's root,
    so `frontend/` itself never appears in it.
@@ -407,9 +407,9 @@ that to work, PotaTuber needs to know which parameter is her mouth. Most
 riggers use the standard `ParamMouthOpenY`, and the default config covers the
 common names:
 
-"""toml
+```toml
 mouth_params = ["ParamMouthOpenY", "ParamMouthOpen", "MouthOpen"]
-"""
+```
 
 If her mouth doesn't move, your rigger named it something else. Open
 [http://localhost:8158/mascot/](http://localhost:8158/mascot/) in a browser,
@@ -464,9 +464,9 @@ the moment she made a face.
 
 List those in `toggles`, and PotaTuber treats them as a separate layer:
 
-"""toml
+```toml
 toggles = ["RedScarf", "YellowScarf", "BlueScarf"]
-"""
+```
 
 Toggles stay on until she switches them off, and making a face doesn't touch
 them. She gets a second tool for them, `set_toggle`, with on and off. Toggles
@@ -481,9 +481,9 @@ By default she plays whatever idle motion the model defines, and if it has
 none, she stands still and blinks. To use a specific motion as her idle, point
 `idle_motion` at it, relative to the model folder:
 
-"""toml
+```toml
 idle_motion = "animations/sway.motion3.json"
-"""
+```
 
 Any looping motion works. This is also the simplest example of driving her
 motions from code, if you ever want to add a `play_motion` tool: look at how
@@ -494,10 +494,10 @@ motions from code, if you ever want to add a `play_motion` tool: look at how
 
 ### Following your mouse
 
-"""toml
+```toml
 follow_mouse = true
 follow_rate = 15
-"""
+```
 
 With `follow_mouse` on, she watches your cursor across the whole screen.
 `follow_rate` is how many times per second she checks; lower it
@@ -522,14 +522,14 @@ is the brain reading it. Change either and she becomes someone else.
 
 ### Who she is
 
-"""toml
+```toml
 [character]
 name = "Pota-chan"
 system_prompt = """
 You are Pota-chan, a cheerful little potato VTuber with a big country heart.
 ...
 """
-"""
+```
 
 `name` is what the console calls her. `system_prompt` is the character sheet
 her brain reads before every conversation: who she is, how she talks, what she
@@ -549,12 +549,12 @@ Language models drift. Twenty messages into a chat, the character sheet is far
 behind, and small models in particular slide back into sounding like a generic
 assistant. PotaTuber fixes that with a trick:
 
-"""toml
+```toml
 reminder = """
 This is your standard reminder on how to respond: you are Pota-chan, the
 cheerful country potato VTuber. Keep your reply short ...
 """
-"""
+```
 
 The `reminder` is attached to your *latest* message every single time, right
 next to where she's generating, and then removed again. It never piles up in
@@ -582,11 +582,11 @@ anything.
 
 ### Which brain
 
-"""toml
+```toml
 [brain]
 base_url = "http://localhost:1234/v1"
 model = "local-model"
-"""
+```
 
 PotaTuber doesn't run the language model itself. It talks to one over the
 OpenAI-compatible API, which nearly every LLM tool speaks: LM Studio, Ollama,
@@ -610,9 +610,9 @@ short, and why you can swap brains without touching PotaTuber.
 
 ### What she remembers
 
-"""toml
+```toml
 max_history = 24000
-"""
+```
 
 She remembers the conversation up to this many characters (roughly four per
 word, or one token), and forgets the oldest exchanges first. Her character
@@ -644,10 +644,10 @@ your CPU, with no training step involved.
    compression adds a little noise to the clone.
 3. Point `[voice]` at it:
 
-   """toml
+   ```toml
    [voice]
    sample = "voices/mine.wav"
-   """
+   ```
 
 4. Restart her. The first launch with a new sample takes a bit longer while she
    studies the voice; the result is cached next to the sample as a
@@ -676,9 +676,9 @@ they stack.
 
 **Pitch shift**
 
-"""toml
+```toml
 pitch_shift = 4.0
-"""
+```
 
 The oldest trick in cartoon voice acting: clone a *lowered* copy of the
 recording, where the voice sits comfortably in the model's range, then play
@@ -690,9 +690,9 @@ sounds like a slowed-down tape, the shift is too big.
 
 **The big model**
 
-"""toml
+```toml
 language = "english"
-"""
+```
 
 `english` is the small, fast model and what most machines should run.
 `english_2026-09_24l` is the large "teacher" model it was distilled from.
@@ -712,9 +712,9 @@ multilingual, and the Whisper model in `[ears]` should drop its `.en` suffix
 
 ### Speed versus smoothness
 
-"""toml
+```toml
 stream_audio = false
-"""
+```
 
 She speaks one sentence at a time, and starts on the first sentence while her
 brain is still writing the next. `stream_audio` decides how each sentence
@@ -742,12 +742,12 @@ open while the key is held, and Whisper only runs after you release it. In
 between, her ears cost nothing. That keeps the potato cool, and it means she
 never mistakes your roommate, your music, or herself for you.
 
-"""toml
+```toml
 [ears]
 hotkey = "shift_r"
 whisper_model = "base.en"
 prompt = "Pota-chan, PotaTuber, Live2D"
-"""
+```
 
 ### The key
 
@@ -767,9 +767,9 @@ By default she listens through your system's default input. If you have more
 than one microphone, set `input_device` to part of its name, like `"Yeti"`.
 To see what you have, run:
 
-"""sh
+```sh
 uv run python -m sounddevice
-"""
+```
 
 It lists every input and output device on your machine. The name is matched
 loosely, so a distinctive word from it is enough.
@@ -819,12 +819,12 @@ your display rides along with each message you send her, so she can
 comment on what you're doing, read what you're reading, or help with what's
 in front of you.
 
-"""toml
+```toml
 [eyes]
 enabled = false
 max_width = 800
 monitor = 1
-"""
+```
 
 `monitor` picks which screen she looks at: `1` is your primary display, `2`
 your second, and so on. `0` captures all of them side by side as one wide
@@ -917,7 +917,7 @@ Open `potatuber/hands.py` and find `register_custom_tools`. It's empty on
 purpose: it's your sandbox, and nothing you put in it can break her built-in
 tools. Add this inside it:
 
-"""python
+```python
     import random
 
     def roll_dice(sides: int = 6):
@@ -940,7 +940,7 @@ tools. Add this inside it:
             },
         },
     })
-"""
+```
 
 Restart her, open the console, and check the tools dropdown: `roll_dice` is in
 the list. Now ask her to roll a die. She calls the tool, the console shows the
@@ -970,12 +970,12 @@ A tool can also talk to the browser, which is how `set_expression` changes
 her face. Instead of returning just a string, return a string and a list of
 events:
 
-"""python
+```python
     from potatuber.events import SetExpression
 
     def celebrate():
         return "You are now celebrating.", [SetExpression(name="Happy")]
-"""
+```
 
 The string goes to her brain as before; the events go to her face (or to
 VTube Studio, in that mode) the moment the tool runs. The events she
@@ -1041,9 +1041,9 @@ in every mode, and so does the subtitle page at [http://localhost:8158/subtitles
 
 ### Desktop mascot
 
-"""sh
+```sh
 uv run python -m potatuber
-"""
+```
 
 She appears as a frameless window floating over everything, with a separate
 subtitle window below. This is the mode [How to use PotaTuber](#how-to-use-potatuber)
@@ -1051,14 +1051,14 @@ describes: wake her up, drag her where you like, toggle ghost mode with **Ctrl+A
 (by default), hold the key to speak.
 Where she starts and how big her windows are live in `[mascot]` and `[subtitles]`:
 
-"""toml
+```toml
 [mascot]
 width = 500
 height = 650
 x = 1120
 y = 182
 toggle_hotkey = "<ctrl>+<alt>+p"
-"""
+```
 
 Positions are remembered once you drag a window, and saved positions win over
 these numbers. Delete `positions.json` to go back to the config's defaults.
@@ -1079,9 +1079,9 @@ so she falls back to the next mode on her own.
 
 ### Browser & OBS
 
-"""sh
+```sh
 uv run python -m potatuber --headless
-"""
+```
 
 No windows at all: she runs as a local website, and you open her in a browser.
 Her face is at [http://localhost:8158/mascot/](http://localhost:8158/mascot/)
@@ -1106,11 +1106,11 @@ get everything VTS offers (its physics, items, scenes, and a whole ecosystem of
 models) and PotaTuber becomes just the brain behind it. Nothing in VTS has to
 know about her; it only sees a plugin.
 
-"""toml
+```toml
 [vts]
 enabled = true
 mode = "model"
-"""
+```
 
 **Setting it up**
 
@@ -1165,12 +1165,12 @@ your shoulder, talking and making faces while your own tracking stays
 untouched. Think of the streamer with a tiny character perched on their
 model.
 
-"""toml
+```toml
 [vts]
 enabled = true
 mode = "item"
 item_name = "Pota-chan"
-"""
+```
 
 It takes a bit of ceremony, all of it one-time, and it has to happen in this
 order:
