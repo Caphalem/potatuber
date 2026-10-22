@@ -2,9 +2,6 @@
 
 **An AI VTuber that runs on a potato.**
 
-<!-- TODO GIF: Pota-chan floating bottom-right over a normal desktop (VS Code or a
-browser open behind her), user holds a key and talks, she answers out loud with
-subtitles appearing below her and her mouth moving. 10-15 seconds, looped. -->
 ![Pota-chan talking on the desktop](docs/images/hero.gif)
 
 PotaTuber is a tiny, fully local AI VTuber: she hears you through your microphone,
@@ -100,18 +97,14 @@ Later you'll use its terminal: in the top menu, **Terminal → New Terminal**
 opens a panel at the bottom where you can type commands. Every command in this
 chapter goes there.
 
-<!-- TODO screenshot: VS Code with the terminal panel open at the bottom,
-Terminal → New Terminal menu highlighted. -->
-![VS Code with its terminal open](docs/images/setup-vscode-terminal.png)
+![VS Code with its terminal open](docs/images/setup-vscode-terminal.jpg)
 
 While you're here, install one extension: click the **Extensions** icon on the
 left (the four squares), search for **Even Better TOML**, and hit **Install**.
 Her settings file is written in TOML, and without this it shows up as plain
 white text instead of being nicely colored and easier to read.
 
-<!-- TODO screenshot: VS Code Extensions panel with "Even Better TOML" in the
-search results, Install button visible. -->
-![Installing the TOML extension](docs/images/setup-toml-extension.png)
+![Installing the TOML extension](docs/images/setup-toml-extension.jpg)
 
 ### Step 2: Install uv
 
@@ -167,9 +160,7 @@ version number, you're good.
 3. On the right, under **Download Options**, pick
    **Ministral 3 3B Instruct 2512 Q4_K_M** (about 3 GB) and hit **Download**.
 
-   <!-- TODO screenshot: LM Studio Model Search with "Ministral 3 3B" typed,
-   the Mistral staff pick selected, Download Options showing Q4_K_M. -->
-   ![Downloading Ministral in LM Studio](docs/images/setup-lmstudio-download.png)
+   ![Downloading Ministral in LM Studio](docs/images/setup-lmstudio-download.jpg)
 
 4. When it's done, go to the **Chat** tab on the left. At the top of the window,
    click **Select a model to load** and pick the Ministral you just downloaded.
@@ -180,9 +171,7 @@ version number, you're good.
    there. At the top it says **Status: Stopped** next to a toggle; switch it on.
    The server starts on port 1234, which is what PotaTuber expects.
 
-   <!-- TODO screenshot: LM Studio Model Server tab, Status: Running, toggle ON,
-   Ministral shown as loaded. -->
-   ![LM Studio's Model Server turned on](docs/images/setup-lmstudio-server.png)
+   ![LM Studio's Model Server turned on](docs/images/setup-lmstudio-server.jpg)
 
 LM Studio needs to be open with the server on whenever you run PotaTuber.
 If you ever hear her say *"I can't reach my brain right now"*, this is why.
@@ -197,9 +186,7 @@ for now; you'll log in from the terminal in a later step.
 1. On [the PotaTuber GitHub page](https://github.com/Caphalem/potatuber), click
    the green **Code** button, then **Download ZIP**.
 
-   <!-- TODO screenshot: GitHub repo page, green Code button open, Download ZIP
-   highlighted. -->
-   ![Downloading the ZIP from GitHub](docs/images/setup-download-zip.png)
+   ![Downloading the ZIP from GitHub](docs/images/setup-download-zip.jpg)
 
 2. Unzip it somewhere you'll find it again, like your Documents folder. You'll
    get a folder called `potatuber-main`. Rename it to `potatuber` if you like.
@@ -280,9 +267,7 @@ After a moment Pota-chan appears in the bottom-right corner of your screen.
 2. Hold **right shift**, say something, and let go.
 3. She answers out loud, with subtitles below her.
 
-<!-- TODO screenshot: Pota-chan awake bottom-right, subtitle visible, VS Code
-terminal behind her showing the startup prints. -->
-![Pota-chan saying hello](docs/images/setup-hello.png)
+![Pota-chan saying hello](docs/images/setup-hello.jpg)
 
 Her console, where you can type to her instead and watch the conversation, is at
 [http://localhost:8158/](http://localhost:8158/). To stop her, click into the
@@ -331,18 +316,14 @@ message waits its turn and she responds to it right after.
 - If you set `follow_mouse` to `true` in `config.toml`, her eyes follow your
   mouse across the whole screen.
 
-<!-- TODO screenshot: side by side — Pota-chan in solid mode with the dark
-panel visible, and in ghost mode floating over a browser window. -->
-![Solid mode and ghost mode](docs/images/use-solid-ghost.png)
+![Solid mode and ghost mode](docs/images/use-solid-ghost.jpg)
 
 ### The Console
 
 Open [http://localhost:8158/](http://localhost:8158/) in any browser. It shows
 the conversation as it happens, and lets you type to her instead of talking.
 
-<!-- TODO screenshot: the console mid-conversation, with a tool-use line, the
-status pill, the vision toggle, and the tools dropdown expanded. -->
-![The Console](docs/images/use-console.png)
+![The Console](docs/images/use-console.jpg)
 
 - **The status pill** in the top left tells you what she's doing: *idle*,
   *listening* (you're holding the key), *thinking* (her brain is working), or
@@ -420,9 +401,7 @@ wake her up, and press F12 to open the browser console. PotaTuber prints every
 parameter the model has there. Find the one that looks like a mouth and add it
 to the list.
 
-<!-- TODO screenshot: browser console showing the "Live2D parameters:" print
-with a mouth parameter highlighted. -->
-![Finding the mouth parameter](docs/images/model-parameters.png)
+![Finding the mouth parameter](docs/images/model-parameters.jpg)
 
 Two more knobs tune how it looks:
 
@@ -949,9 +928,7 @@ Restart her, open the console, and check the tools dropdown: `roll_dice` is in
 the list. Now ask her to roll a die. She calls the tool, the console shows the
 roll, and she tells you what she got, probably with an opinion about it.
 
-<!-- TODO screenshot: console showing "You: roll a die for me", the grey
-roll_dice tool line, and her reply reacting to the number. -->
-![Her first dice roll](docs/images/hands-dice.png)
+![Her first dice roll](docs/images/hands-dice.jpg)
 
 Three parts, and what each one is for:
 
@@ -1130,9 +1107,7 @@ without any rigging changes. Her expressions come from VTS's own list, named
 after their files like everywhere else, and `toggles` in `[face]` works the
 same way here.
 
-<!-- TODO screenshot: VTube Studio with the API toggle on, the PotaTuber plugin
-permission dialog visible. -->
-![Allowing the PotaTuber plugin in VTube Studio](docs/images/modes-vts-allow.png)
+![Allowing the PotaTuber plugin in VTube Studio](docs/images/modes-vts-allow.jpg)
 
 `mouth_gain` in `[vts]` tunes how far her mouth opens, and it depends on the
 model: VTS's own sample models want a lower number than Pota-chan does. The
@@ -1193,9 +1168,7 @@ order:
    `FaceAngleX/Y/Z` and she nods along with you; set them to nothing and she
    does her own thing (an idle animation looks best for this).
 
-   <!-- TODO screenshot: VTS parameter settings with ParamMouthOpenY mapped to
-   PotaTuberMouth highlighted. -->
-   ![Mapping her mouth to PotaTuber's inputs](docs/images/modes-item-mapping.png)
+   ![Mapping her mouth to PotaTuber's inputs](docs/images/modes-item-mapping.jpg)
 
 4. Set up her expression hotkeys in VTS as usual, then clear their key
    bindings, or you'll type her faces on and off all day. Easier: after
