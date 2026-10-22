@@ -1302,7 +1302,7 @@ other characters.
 
 ### License
 
-PotaTuber's code is released under the [MIT License](LICENSE). Do what you
+PotaTuber's code is released under the [MIT License](LICENSE.md). Do what you
 like with it; a mention is appreciated but not required.
 
 Two things in the repo aren't MIT:
