@@ -1240,6 +1240,7 @@ old one.
 - She doesn't use a tool you added: [How to give her new abilities](#how-to-give-her-new-abilities)
 - A window is off-screen, VTube Studio keeps "not answering", or her first
   outfit toggle does the opposite: [Different modes](#different-modes)
+- An error mentioning access, gated, or 401 from Hugging Face means you haven't accepted the Pocket TTS terms (step 4), or logged in (step 7).
 
 ### "Server never came up" on the first run
 
