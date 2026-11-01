@@ -155,8 +155,8 @@ height = 650
 # (logical) screen, just above the taskbar. Only used on first boot: once you
 # drag her, the position is saved to positions.json and that wins. Delete
 # that file to come back here.
-x = 1120
-y = 182
+x = 1020
+y = 30
 # Switches every PotaTuber window between solid (clickable, draggable) and
 # ghost (see-through, click-through). Uses pynput's hotkey format — see:
 # https://pynput.readthedocs.io/en/latest/keyboard.html#global-hotkeys
@@ -169,11 +169,17 @@ toggle_hotkey = "<ctrl>+<alt>+p"
 # The subtitle window. Same logical-pixel rules and the same ghost/solid
 # hotkey as the mascot; position is remembered in positions.json after you
 # drag it. The defaults center it near the bottom of a 1536x864 (logical)
-# screen. Wide and short works best: one or two lines of text.
-width = 800
-height = 120
-x = 368
-y = 700
+# screen.
+#
+# The text size is fixed (it's in frontend/subtitles/index.html, along with
+# the font, colour and outline — plain CSS, go ahead and make it yours). The
+# window just decides how many lines fit: each line needs about 60 pixels at
+# the default size, plus 20 or so of breathing room. 240 fits three lines
+# comfortably; make it taller if she tends to ramble.
+width = 1200
+height = 240
+x = 168
+y = 580
 
 [vts]
 # Use a model loaded in VTube Studio as her body instead of the desktop mascot.

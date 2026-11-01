@@ -1035,13 +1035,24 @@ Where she starts and how big her windows are live in `[mascot]` and `[subtitles]
 [mascot]
 width = 500
 height = 650
-x = 1120
-y = 182
+x = 1020
+y = 30
 toggle_hotkey = "<ctrl>+<alt>+p"
+
+[subtitles]
+width = 1200
+height = 240
+x = 168
+y = 580
 ```
 
 Positions are remembered once you drag a window, and saved positions win over
 these numbers. Delete `positions.json` to go back to the config's defaults.
+
+The subtitle text itself (size, font, colour, outline) is plain CSS in
+`frontend/subtitles/index.html`; change it there. The window's height just
+decides how many lines fit: about 60 pixels per line at the default size,
+plus a little breathing room. The default fits three.
 
 Her size on screen isn't a config setting: scroll over her in solid mode to
 zoom, and she remembers it. The window is just the frame she's drawn in, so
