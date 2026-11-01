@@ -1053,7 +1053,7 @@ make it big enough for the size you like, or she gets clipped at the edges.
 > and a window at `y = 940` is off the bottom edge. If a window seems to
 > vanish, that's why; use smaller numbers.
 
-Windows and macOS are supported. On Windows the window is a chroma-keyed
+Windows (10 and 11) and macOS are supported. On Windows the window is a chroma-keyed
 trick; on macOS it's real transparency. On Linux there's no mascot window yet,
 so she falls back to the next mode on her own.
 
@@ -1238,6 +1238,16 @@ The desktop mascot window isn't affected. For the browser pages, either use
 a regular browser, or tell yours to be honest with localhost: in Librewolf,
 open `about:config`, find `privacy.resistFingerprinting.exemptedDomains`, and
 set it to `localhost, 127.0.0.1`. Everything else keeps its protection.
+
+### Windows 11: her background is dark grey instead of transparent
+
+The desktop mascot works on both Windows 10 and 11. On 11, pywebview gives
+dark-theme windows a Mica backdrop (a wallpaper-tinted dark grey) that
+sits between the page and the transparency trick, so PotaTuber switches it
+off every time she changes between solid and ghost mode. If her window ever
+shows a dark grey background instead of your desktop, that switch didn't
+take: toggle ghost mode once with **Ctrl+Alt+P** (by default) and it
+reasserts itself.
 
 ### macOS quirks
 
