@@ -184,12 +184,10 @@ If you ever hear her say *"I can't reach my brain right now"*, this is why.
 1. Sign up for free at [huggingface.co](https://huggingface.co/join).
 2. While logged in, open
    [huggingface.co/kyutai/pocket-tts](https://huggingface.co/kyutai/pocket-tts).
-   At the bottom of the page there's a notice asking you to agree to the
-   model's terms; hit accept. Her voice model is "gated", which
+   Near the bottom of the page there's a notice asking you to agree to the
+   model's terms; fill it out and hit accept. Her voice model is "gated", which
    means Hugging Face won't let anyone download it until they've done this.
 
-   <!-- TODO screenshot: the pocket-tts model page with the "agree and access
-   repository" form/notice highlighted. -->
    ![Accepting the Pocket TTS terms](docs/images/setup-hf-gated.jpg)
 
 You'll log in from the terminal in a later step.
