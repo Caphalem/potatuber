@@ -49,7 +49,10 @@ its knobs cost.
   with Ministral 3 3B Instruct (Q4) loaded and the local server turned on
   (Model Server tab).
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- A [Hugging Face](https://huggingface.co/) account — Pocket TTS downloads its weights from there.
+- A [Hugging Face](https://huggingface.co/) account. Pocket TTS downloads its
+  weights from there, and the model is gated: visit
+  [huggingface.co/kyutai/pocket-tts](https://huggingface.co/kyutai/pocket-tts)
+  while logged in and accept the terms, or the download will be refused.
 
 **Steps**
 
@@ -176,10 +179,20 @@ version number, you're good.
 LM Studio needs to be open with the server on whenever you run PotaTuber.
 If you ever hear her say *"I can't reach my brain right now"*, this is why.
 
-### Step 4: Make a Hugging Face account
+### Step 4: Make a Hugging Face account and accept the voice model's terms
 
-Sign up for free at [huggingface.co](https://huggingface.co/join). That's all
-for now; you'll log in from the terminal in a later step.
+1. Sign up for free at [huggingface.co](https://huggingface.co/join).
+2. While logged in, open
+   [huggingface.co/kyutai/pocket-tts](https://huggingface.co/kyutai/pocket-tts).
+   At the bottom of the page there's a notice asking you to agree to the
+   model's terms; hit accept. Her voice model is "gated", which
+   means Hugging Face won't let anyone download it until they've done this.
+
+   <!-- TODO screenshot: the pocket-tts model page with the "agree and access
+   repository" form/notice highlighted. -->
+   ![Accepting the Pocket TTS terms](docs/images/setup-hf-gated.jpg)
+
+You'll log in from the terminal in a later step.
 
 ### Step 5: Download PotaTuber
 
