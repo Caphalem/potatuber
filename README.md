@@ -1237,6 +1237,17 @@ downloads resume where they left off. Run `uv run python -m potatuber.server`
 once on its own, which has no time limit, wait for `All parts ready!`, and
 launch normally after that.
 
+### `uv sync` fails with an error about a Python interpreter
+
+uv found a Python on your computer that it shouldn't use (some programs, like
+LibreOffice, ship their own stripped-down `python.exe`). Tell uv to grab its
+own copy instead:
+
+```sh
+uv python install 3.12
+uv sync
+```
+
 ### She appears as a black silhouette
 
 Her shape is there but she's solid black. This happens in privacy-hardened

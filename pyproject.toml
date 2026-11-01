@@ -28,6 +28,12 @@ potatuber = "potatuber.__main__:main"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv]
+# Always use uv's own Python download, never one found on the machine. A
+# stray python.exe on the PATH (LibreOffice ships one!) can otherwise get
+# picked up and break everything.
+python-preference = "only-managed"
+
 [tool.uv.sources]
 # On Linux the default PyPI torch is the full CUDA build — several gigabytes
 # of GPU code the potato never uses. Windows and macOS get CPU-only by default.
